@@ -1,0 +1,43 @@
+
+import DefaultLayout from './layouts/DefaultLayout';
+import LoginLayout from './layouts/LoginLayout';
+import HomeView from './views/home'
+import LoginView from './views/login'
+import RegisterView from './views/register'
+import CategoryView from './views/category'
+import CreateView from './views/createweb'
+
+const routes = [
+    {
+        path: `${process.env.PUBLIC_URL}/`,
+        exact: true,
+        layout: DefaultLayout,
+        component: HomeView,
+    },
+    {
+        path: `${process.env.PUBLIC_URL}/login`,
+        exact: true,
+        layout: LoginLayout,
+        component: LoginView,
+    },
+    {
+        path: `${process.env.PUBLIC_URL}/register`,
+        exact: true,
+        layout: LoginLayout,
+        component: RegisterView,
+    },
+    {
+        path: `${process.env.PUBLIC_URL}/category`,
+        exact: true,
+        layout: LoginLayout,
+        component: CategoryView,
+    },
+    {
+        path: `${process.env.PUBLIC_URL}/create`,
+        exact: true,
+        layout: LoginLayout,
+        component: CreateView,
+    }
+]
+
+export default routes;

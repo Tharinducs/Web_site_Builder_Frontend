@@ -1,0 +1,63 @@
+
+
+.title{
+     /* font-family: SegoeUI; */
+     font-size: 30px;
+     font-weight: bold;
+     font-style: normal;
+     font-stretch: normal;
+     line-height: normal;
+     letter-spacing: 1.08px;
+     color: #2d2d2d;
+     margin-top: 20px;
+     margin-bottom: 15%;
+}
+
+.select{
+    width: 100%;
+    border: none !important;
+    height: 40px;
+    padding-left: 4%;
+    border-radius: 5px;
+    margin-bottom: 5%;
+}
+
+.selectLable{
+    letter-spacing: 1.08px;
+    color: #2d2d2d;
+    padding-top: 1%;
+    padding-bottom: 3%;
+    
+}
+
+
+.cardBody{
+    margin-top: 10%;
+}
+
+.formInput{
+    width: 100% !important;
+    border: none !important;
+    height: 40px;
+    padding-left: 4%;
+    border-radius: 5px;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.formInput:focus{
+    border: none !important;
+}
+
+.button{
+    width: 100%;
+    margin-top: 10%;
+    height: 45px;
+}
+
+.errorMessage{
+    color: #ff3d3d;
+    font-size:13px;
+    margin-top: 10px;
+    text-align: center;
+}

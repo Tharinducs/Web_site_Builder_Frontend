@@ -1,0 +1,32 @@
+
+
+.cardBody{
+    margin-top: 20%;
+}
+
+.formInput{
+    width: 100% !important;
+    border: none !important;
+    height: 40px;
+    padding-left: 4%;
+    border-radius: 5px;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.formInput:focus{
+    border: none !important;
+}
+
+.button{
+    width: 100%;
+    margin-top: 5%;
+    height: 45px;
+}
+
+.errorMessage{
+    color: #ff3d3d;
+    font-size:13px;
+    margin-top: 10px;
+    text-align: center;
+}
