@@ -6,6 +6,7 @@ import LoginView from './views/login'
 import RegisterView from './views/register'
 import CategoryView from './views/category'
 import CreateView from './views/createweb'
+import Webpage from './views/webpage'
 
 const routes = [
     {
@@ -37,6 +38,12 @@ const routes = [
         exact: true,
         layout: LoginLayout,
         component: CreateView,
+    },
+    {
+        path: `${process.env.PUBLIC_URL}/webpage`,
+        exact: true,
+        layout: LoginLayout,
+        component: Webpage,
     }
 ]
 

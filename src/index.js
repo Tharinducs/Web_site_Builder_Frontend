@@ -7,11 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import './assets/styles/font-awesome/css/font-awesome.css';
 
 ReactDOM.render(
-  <React.StrictMode>
     <Provider store={store}>
       <App />
-    </Provider>
-  </React.StrictMode>,
+    </Provider>,
   document.getElementById("root")
 );
 
