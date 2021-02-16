@@ -1,37 +1,3 @@
-.navItem{
-    font-size: 18px;
-}
-
-.navBar{
-    background-color: #F9F4F9 !important;
-    position: fixed;
-}
-
-.iconContainer{
-    text-align: center;
-    justify-content: center;
-}
-
-.textContainer{
-    text-align: center;
-}
-
-.gImage{
-    max-width: 100%;
-    height: 200px;
-    -webkit-transition: .3s ease-in-out;
-	transition: .3s ease-in-out;
-}
-
-.gImage:hover{
-   filter: sepia(100%);
-}
-
-.iconContainer:hover{
-    color: #34B856;
-}
-
-
 .benifit{
     background-color: #eeeeee;
     padding-bottom: 2%;
@@ -50,64 +16,21 @@
     font-weight: 600;
 }
 
-.aboutBack{
-    background-color: #fff !important;
+.pImage{
+    max-width: 100%;
 }
 
-.back{
-    background-color: #fff !important;
-    height: 100% !important;
-}
 
 
 
 @media (max-width: 599px) {
-    .moduler {
+    .module {
         width: 100%;
         height: 50%;
         padding: 30px 10px ;
         text-align: center;
         color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/resturant.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulef {
-        width: 100%;
-        height: 50%;
-        padding: 30px 10px ;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/fashion.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .moduleg {
-        width: 100%;
-        height: 50%;
-        padding: 30px 10px ;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/grocery.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulet {
-        width: 100%;
-        height: 50%;
-        padding: 30px 10px ;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/travel.jpg) no-repeat center center fixed;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/bg2.jpg) no-repeat center center fixed;
         background-color: #000;
         -webkit-background-size: cover;
         -moz-background-size: cover;
@@ -164,7 +87,7 @@
     }
 
     .sectiontitle h2 span{
-        color: #34B856;
+        color: #3EC8F0;
     }
 
     .sectiontitle img{
@@ -225,52 +148,13 @@
 
 
 @media (min-width: 600px) {
-    .moduler {
+    .module {
         width: 100%;
         height: 65%;
         padding: 100px 0;
         text-align: center;
         color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/resturant.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulef {
-        width: 100%;
-        height: 65%;
-        padding: 100px 0;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/fashion.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .moduleg {
-        width: 100%;
-        height: 65%;
-        padding: 100px 0;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/grocery.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulet {
-        width: 100%;
-        height: 65%;
-        padding: 100px 0;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/travel.jpg) no-repeat center center fixed;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/bg2.jpg) no-repeat center center fixed;
         background-color: #000;
         -webkit-background-size: cover;
         -moz-background-size: cover;
@@ -318,7 +202,7 @@
     }
 
     .sectiontitle h2 span{
-        color: #34B856;
+        color: #3EC8F0;
     }
 
     .sectiontitle img{
@@ -376,52 +260,13 @@
 
 
 @media (min-width: 900px) {
-    .moduler {
+    .module {
         width: 100%;
         height: 65%;
         padding: 100px 0;
         text-align: center;
         color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/resturant.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulef {
-        width: 100%;
-        height: 65%;
-        padding: 100px 0;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/fashion.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .moduleg {
-        width: 100%;
-        height: 65%;
-        padding: 100px 0;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/grocery.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulet {
-        width: 100%;
-        height: 65%;
-        padding: 100px 0;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/travel.jpg) no-repeat center center fixed;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/bg2.jpg) no-repeat center center fixed;
         background-color: #000;
         -webkit-background-size: cover;
         -moz-background-size: cover;
@@ -476,7 +321,7 @@
     }
 
     .sectiontitle h2 span{
-        color: #34B856;
+        color: #3EC8F0;
     }
 
     .sectiontitle img{
@@ -535,56 +380,14 @@
 
 
 @media (min-width: 1200px) {
-    .moduler {
+    .module {
         width: 100%;
         height: 85%;
         padding: 100px 0;
         padding-bottom: 10%;
         text-align: center;
         color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/resturant.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulef {
-        width: 100%;
-        height: 85%;
-        padding: 100px 0;
-        padding-bottom: 10%;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/fashion.jpg) no-repeat fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .moduleg {
-        width: 100%;
-        height: 85%;
-        padding: 100px 0;
-        padding-bottom: 10%;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/grocery.jpg) no-repeat center center fixed;
-        background-color: #000;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        background-size: cover;
-        -o-background-size: cover; 
-    }
-    .modulet {
-        width: 100%;
-        height: 85%;
-        padding: 100px 0;
-        padding-bottom: 10%;
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/travel.jpg) no-repeat center center fixed;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url(../../assets/img/bg2.jpg) no-repeat center center fixed;
         background-color: #000;
         -webkit-background-size: cover;
         -moz-background-size: cover;
@@ -649,7 +452,7 @@
     }
 
     .sectiontitle h2 span{
-        color: #34B856;
+        color: #3EC8F0;
     }
 
     .sectiontitle img{

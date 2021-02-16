@@ -7,6 +7,7 @@ import RegisterView from './views/register'
 import CategoryView from './views/category'
 import CreateView from './views/createweb'
 import Webpage from './views/webpage'
+import ProfileView from './views/profile'
 
 const routes = [
     {
@@ -44,6 +45,12 @@ const routes = [
         exact: true,
         layout: LoginLayout,
         component: Webpage,
+    },
+    {
+        path: `${process.env.PUBLIC_URL}/profile`,
+        exact: true,
+        layout: LoginLayout,
+        component: ProfileView,
     }
 ]
 

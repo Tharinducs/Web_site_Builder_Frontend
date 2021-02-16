@@ -28,7 +28,7 @@ const Header = () => {
           </Nav.Link>
           <Nav.Link
             onClick={() => {
-              const section = document.querySelector("#services");
+              const section = document.querySelector("#contact");
               section &&
                 section.scrollIntoView({ behavior: "smooth", block: "start" });
             }}

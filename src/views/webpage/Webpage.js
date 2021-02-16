@@ -3,6 +3,7 @@ import Header from "./Header";
 import Intro from "./WebIntro";
 import About from "./About";
 import ContactUs from "./ContactUs"
+import ImageGallery from './ImageGallery'
 import styles from "./Webpage.module.css";
 
 const Webpage = () => {
@@ -40,6 +41,7 @@ const Webpage = () => {
         </div>
         <About/>
         <ContactUs />
+        <ImageGallery />
       </div>
     </>
   );
