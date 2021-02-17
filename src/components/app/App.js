@@ -7,7 +7,7 @@ import history from "../../_helpers/history";
 const App = () => {
   return (
     <div className="App">
-      <Router history={history} basename={"/"}>
+      <Router history={history}>
         <Switch>
           {routes.map((route, index) => (
             <Route
@@ -17,7 +17,6 @@ const App = () => {
               component={route.layout(route.component, route.breadcrumbs)}
             />
           ))}
-          <Redirect from="/home" to="/" />
         </Switch>
       </Router>
     </div>

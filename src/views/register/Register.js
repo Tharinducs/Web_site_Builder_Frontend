@@ -1,10 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Register.module.css";
 import { Formik, ErrorMessage } from "formik";
-import { Button } from "react-bootstrap";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import ToastView from "../../components/toast/Toast";
+import { register } from "../../store/actions/login";
+import { Button, Spinner } from "react-bootstrap";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import * as Yup from "yup";
 
-const Register = () => {
+const Register = (props) => {
+  const [showToast, setShowToast] = useState(false);
+  const [showErrorToaster, setShowErrorToaster] = useState(false);
   useEffect(() => {
     document.body.style = "background: #bee8fa;";
 
@@ -12,12 +19,51 @@ const Register = () => {
       document.body.style = "background: #ffffff;";
     };
   }, []);
+  console.log(props.signUpProps.registerSuccess)
+  useEffect(() => {
+    //if logged in success. redirect
+    if (props.signUpProps.registerSuccess) {
+      setShowToast(true);
+      setTimeout(() => {
+        props.history.push(`${process.env.PUBLIC_URL}/login`);
+      }, 1000);
+    }
+    //if error occured stop loader
+    if (props.signUpProps.registerErorr) {
+      setShowErrorToaster(true);
+    }
+  }, [
+    props.signUpProps.registerSuccess,
+    props.signUpProps.registerErorr,
+    props.history,
+  ]);
 
   const handleSubmit = (values) => {
-    console.log(values);
+    const registerData = {
+      username: values.username,
+      email: values.email,
+      password: values.password,
+    };
+    props.register(registerData);
   };
   return (
     <>
+      <ToastView
+        icon={faCheck}
+        setShow={(showStatus) => setShowToast(showStatus)}
+        show={showToast}
+        text={props.signUpProps.registerSuccess}
+        color="#adf4ce"
+        backgroundColor="#00823e"
+      />
+      <ToastView
+        icon={faTimes}
+        setShow={(showStatus) => setShowErrorToaster(showStatus)}
+        show={showErrorToaster}
+        text={props.signUpProps.registerErorr}
+        color="#FCC3B6"
+        backgroundColor="#ff0000 "
+      />
       <div className={`container ${styles.background}`}>
         <div className={styles.cardBody}>
           <div className="row">
@@ -90,8 +136,7 @@ const Register = () => {
                         onBlur={formprops.handleBlur("email")}
                         className={styles.formInput}
                       />
-                      {formprops.touched.email &&
-                      formprops.errors.email ? (
+                      {formprops.touched.email && formprops.errors.email ? (
                         <div className={styles.errorMessage}>
                           {formprops.errors.email}
                         </div>
@@ -133,9 +178,19 @@ const Register = () => {
                     <Button
                       variant="dark"
                       className={styles.button}
+                      disabled={props.signUpProps.registerLoadding}
                       onClick={formprops.handleSubmit}
                     >
-                      LOGIN
+                      {props.signUpProps.registerLoadding ? (
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <>LOGIN</>
+                      )}
                     </Button>
                   </>
                 )}
@@ -149,4 +204,10 @@ const Register = () => {
   );
 };
 
-export default Register;
+const mapStateToProps = (state) => {
+  return {
+    signUpProps: state.login,
+  };
+};
+
+export default connect(mapStateToProps, { register })(withRouter(Register));
