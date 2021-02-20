@@ -1,9 +1,10 @@
 import React, { useEffect,useState } from "react";
 import styles from "./Category.module.css";
 import { Button } from "react-bootstrap";
+import { withRouter } from "react-router-dom";
 import * as Yup from "yup";
 
-const Category = () => {
+const Category = (props) => {
   const [type,setType] =useState("")
   useEffect(() => {
     document.body.style = "background: #bee8fa;";
@@ -50,6 +51,9 @@ const Category = () => {
                       disabled={type === ""}
                       onClick={()=>{
                           localStorage.setItem("type",type)
+                          setTimeout(() => {
+                            props.history.push(`${process.env.PUBLIC_URL}/create`);
+                          }, 1000);
                       }}
                     >
                       NEXT
@@ -67,4 +71,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default withRouter(Category);

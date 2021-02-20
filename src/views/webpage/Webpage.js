@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Intro from "./WebIntro";
 import About from "./About";
-import ContactUs from "./ContactUs"
-import ImageGallery from './ImageGallery'
+import ContactUs from "./ContactUs";
+import ImageGallery from "./ImageGallery";
 import styles from "./Webpage.module.css";
+import { withRouter } from "react-router-dom";
 
-const Webpage = () => {
-  const [type, setType] = useState(null);
-  let aboutRef
+const Webpage = (props) => {
+  const [website, setWebSite] = useState(null);
+
+  console.log(props, "props");
   useEffect(() => {
     document.body.style = "background: #bee8fa;";
 
@@ -18,33 +20,46 @@ const Webpage = () => {
   }, []);
 
   useEffect(() => {
-    const type = localStorage.getItem("type");
-    setType(type);
+    const state = props.location.state;
+    if (
+      state &&
+      state.websiteData &&
+      Object.keys(state.websiteData).length !== 0
+    ) {
+      setWebSite(state.websiteData);
+    } else {
+      props.history.push(`${process.env.PUBLIC_URL}/profile`);
+    }
   }, []);
+
   return (
     <>
-      <Header/>
+      <Header />
       <div className={styles.back}>
         <div>
-          {type && type === "Resturant" && (
-            <Intro image={styles.moduler} cname="My Resturant" />
+          {website && website.type && website.type === "Resturant" && (
+            <Intro image={styles.moduler} cname={website.companyName} />
           )}
-          {type && type === "Fashion" && (
-            <Intro image={styles.modulef} cname="My Fashion" />
+          {website && website.type && website.type === "Fashion" && (
+            <Intro image={styles.modulef} cname={website.companyName} />
           )}
-          {type && type === "Online Store" && (
-            <Intro image={styles.moduleg} cname="My Grocery" />
+          {website && website.type && website.type === "Online Store" && (
+            <Intro image={styles.moduleg} cname={website.companyName} />
           )}
-          {type && type === "Travel" && (
-            <Intro image={styles.modulet} cname="My Traval agency" />
+          {website && website.type && website.type === "Travel" && (
+            <Intro image={styles.modulet} cname={website.companyName} />
           )}
         </div>
-        <About/>
-        <ContactUs />
-        <ImageGallery />
+        {website && (
+          <>
+            <About website={website} />
+            <ContactUs website={website} />
+            <ImageGallery website={website} />
+          </>
+        )}
       </div>
     </>
   );
 };
 
-export default Webpage;
+export default withRouter(Webpage);

@@ -1,5 +1,5 @@
 import {
-  API_DOMAIN,
+  API_URL,
   LOGIN_FAILED,
   LOGIN_SUCCESS,
   LOGIN_LOADING,
@@ -10,17 +10,23 @@ import {
 
 import axios from "axios";
 
+export const getToken = async (refreshToken, email) => {
+  const response = await axios.post(`${API_URL}/user/refreshtoken`, {
+    refreshToken: refreshToken,
+    email: email,
+  });
+  return response.data;
+};
+
 export const register = (value) => (dispatch) => {
-  console.log(value, "value");
   registerLoadding(dispatch);
   axios
-    .post(API_DOMAIN + "/api/user/register", value, {
+    .post(API_URL + "/user/register", value, {
       headers: {
         "Content-Type": "application/json",
       },
     })
     .then((data) => {
-      console.log(data.data.msg,"data.data.msg",data.data)
       registerSuccess(dispatch, data.data.msg);
     })
     .catch((error) => {
@@ -32,12 +38,43 @@ export const register = (value) => (dispatch) => {
       } else {
         registerFailed(dispatch, "Something went wrong");
       }
-      console.log(error.response.data.msg, "errr");
     });
 };
 
 const registerLoadding = (dispatch) => dispatch({ type: REGISTER_LOADING });
 const registerSuccess = (dispatch, data) =>
-  dispatch({ type: REGISTER_SUCCESS, payload:data });
+  dispatch({ type: REGISTER_SUCCESS, payload: data });
 const registerFailed = (dispatch, error) =>
-  dispatch({ type: REGISTER_FAILED, payload:error });
+  dispatch({ type: REGISTER_FAILED, payload: error });
+
+export const login = (value) => (dispatch) => {
+  loginLoadding(dispatch);
+  axios
+    .post(API_URL + "/user/login", value, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((data) => {
+      localStorage.setItem("loginToken", JSON.stringify(data.data));
+      axios.defaults.headers.common.Authorization =
+        "Bearer " + data.data.accesstoken;
+      loginSuccess(dispatch, data.data);
+    })
+    .catch((error) => {
+      if (error.request && error.request.response) {
+        loginFailed(
+          dispatch,
+          error.response.data.msg || "Something went wrong"
+        );
+      } else {
+        loginFailed(dispatch, "Something went wrong");
+      }
+    });
+};
+
+const loginLoadding = (dispatch) => dispatch({ type: LOGIN_LOADING });
+const loginSuccess = (dispatch, data) =>
+  dispatch({ type: LOGIN_SUCCESS, payload: data });
+const loginFailed = (dispatch, error) =>
+  dispatch({ type: LOGIN_FAILED, payload: error });

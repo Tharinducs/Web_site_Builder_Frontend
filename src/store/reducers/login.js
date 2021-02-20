@@ -11,6 +11,9 @@ const initialValue = {
   registerLoadding: false,
   registerSuccess: null,
   registerErorr: null,
+  loginLoadding:false,
+  loginSuccess:false,
+  loginError:null
 };
 
 const login = (state = initialValue, action) => {
@@ -23,7 +26,6 @@ const login = (state = initialValue, action) => {
         registerErorr: null,
       };
     case REGISTER_SUCCESS:
-        console.log(action,"payload")
       return {
         ...state,
         registerLoadding: false,
@@ -37,6 +39,27 @@ const login = (state = initialValue, action) => {
         registerSuccess: null,
         registerErorr: action.payload,
       };
+      case LOGIN_LOADING:
+        return {
+          ...state,
+          loginLoadding:true,
+          loginSuccess:false,
+          loginError:null
+        }
+      case LOGIN_SUCCESS:
+        return{
+          ...state,
+          loginLoadding:false,
+          loginSuccess:true,
+          loginError:null
+        }
+      case LOGIN_FAILED:
+        return {
+          ...state,
+          loginLoadding:false,
+          loginSuccess:false,
+          loginError:action.payload
+        }
     default:
       return state;
   }

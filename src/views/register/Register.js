@@ -19,7 +19,6 @@ const Register = (props) => {
       document.body.style = "background: #ffffff;";
     };
   }, []);
-  console.log(props.signUpProps.registerSuccess)
   useEffect(() => {
     //if logged in success. redirect
     if (props.signUpProps.registerSuccess) {

@@ -1,10 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./Login.module.css";
 import { Formik, ErrorMessage } from "formik";
-import { Button } from "react-bootstrap";
+import { Button,Spinner } from "react-bootstrap";
 import * as Yup from "yup";
+import { connect } from "react-redux";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { withRouter } from "react-router-dom";
+import ToastView from "../../components/toast/Toast";
+import { login } from "../../store/actions/login";
 
-const Login = () => {
+const Login = (props) => {
+  const [showToast, setShowToast] = useState(false);
+  const [showErrorToaster, setShowErrorToaster] = useState(false);
   useEffect(() => {
     document.body.style = "background: #bee8fa;";
 
@@ -13,11 +20,45 @@ const Login = () => {
     };
   }, []);
 
+  useEffect(() => {
+    //if logged in success. redirect
+    if (props.signUpProps.loginSuccess) {
+      setShowToast(true);
+      setTimeout(() => {
+        props.history.push(`${process.env.PUBLIC_URL}/category`);
+      }, 1000);
+    }
+    //if error occured stop loader
+    if (props.signUpProps.loginError) {
+      setShowErrorToaster(true);
+    }
+  }, [
+    props.signUpProps.loginSuccess,
+    props.signUpProps.loginError,
+    props.history,
+  ]);
+
   const handleSubmit = (values) => {
-    console.log(values);
+    props.login(values);
   };
   return (
     <>
+      <ToastView
+        icon={faCheck}
+        setShow={(showStatus) => setShowToast(showStatus)}
+        show={showToast}
+        text="Successfully Logged In"
+        color="#adf4ce"
+        backgroundColor="#00823e"
+      />
+      <ToastView
+        icon={faTimes}
+        setShow={(showStatus) => setShowErrorToaster(showStatus)}
+        show={showErrorToaster}
+        text={props.signUpProps.loginError}
+        color="#FCC3B6"
+        backgroundColor="#ff0000 "
+      />
       <div className={`container ${styles.background}`}>
         <div className={styles.cardBody}>
           <div className="row">
@@ -56,12 +97,14 @@ const Login = () => {
                         placeholder="Username"
                         value={formprops.values.username}
                         onChange={formprops.handleChange("username")}
-                        onBlur={formprops.handleBlur('username')}
+                        onBlur={formprops.handleBlur("username")}
                         className={styles.formInput}
                       />
                       {formprops.touched.username &&
                       formprops.errors.username ? (
-                        <div className={styles.errorMessage}>{formprops.errors.username}</div>
+                        <div className={styles.errorMessage}>
+                          {formprops.errors.username}
+                        </div>
                       ) : null}
                     </div>
                     <div>
@@ -70,16 +113,33 @@ const Login = () => {
                         placeholder="Password"
                         value={formprops.values.password}
                         onChange={formprops.handleChange("password")}
-                        onBlur={formprops.handleBlur('password')}
+                        onBlur={formprops.handleBlur("password")}
                         className={styles.formInput}
                       />
                       {formprops.touched.password &&
                       formprops.errors.password ? (
-                        <div className={styles.errorMessage}>{formprops.errors.password}</div>
+                        <div className={styles.errorMessage}>
+                          {formprops.errors.password}
+                        </div>
                       ) : null}
                     </div>
 
-                    <Button variant="dark" className={styles.button} onClick={formprops.handleSubmit}>LOGIN</Button>
+                    <Button
+                      variant="dark"
+                      className={styles.button}
+                      onClick={formprops.handleSubmit}
+                    >
+                      {props.signUpProps.loginLoadding ? (
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <>LOGIN</>
+                      )}
+                    </Button>
                   </>
                 )}
               </Formik>
@@ -92,4 +152,10 @@ const Login = () => {
   );
 };
 
-export default Login;
+const mapStateToProps = (state) => {
+  return {
+    signUpProps: state.login,
+  };
+};
+
+export default connect(mapStateToProps, { login })(withRouter(Login));

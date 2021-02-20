@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from "react";
-import styles from "./CreateWeb.module.css";
+import styles from "./Editweb.module.css";
 import { Formik, ErrorMessage } from "formik";
 import { connect } from "react-redux";
 import { Button, Spinner } from "react-bootstrap";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import ToastView from "../../components/toast/Toast";
 import Loader from "../../components/loader/Loader";
+import { API_DOMAIN } from "../../_helpers/constant";
 import * as Yup from "yup";
-import {
-  createDraft,
-  getDraft,
-  uploadImages,
-  createWebsite,
-} from "../../store/actions/website";
+import { uploadImages } from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
 
-const CreateWeb = (props) => {
+const Editweb = (props) => {
+  const [website, setWebSite] = useState(null);
   const [files, setFiles] = useState([]);
   const [clicked, setClicked] = useState(null);
   const [userId, setUserId] = useState(null);
   const [type, setType] = useState(null);
   const [showToast, setShowToast] = useState(false);
   const [showErrorToaster, setShowErrorToaster] = useState(false);
-  const {
-    website: { drft },
-  } = props;
 
   let filesRef;
   useEffect(() => {
@@ -36,42 +30,46 @@ const CreateWeb = (props) => {
   }, []);
 
   useEffect(() => {
-    //if logged in success. redirect
-    if (props.website.draftSuccess) {
-      setShowToast(true);
+    if (props.website.updateWebsiteSuccess) {
+        setShowToast(true);
+        setTimeout(()=>{
+            props.history.push(`${process.env.PUBLIC_URL}/profile`);
+        },1000)
+      
     }
-    //if error occured stop loader
-    if (props.website.draftError) {
-      setShowErrorToaster(true);
+
+    if(props.website.updateWebsiteError){
+        setShowErrorToaster(true);
     }
-  }, [props.website.draftError, props.website.draftSuccess]);
+  }, [props.website.updateWebsiteSuccess,props.website.updateWebsiteError, props.history]);
 
   useEffect(() => {
-    if (props.website.createWebsiteSuccess) {
+    const state = props.location.state;
+    if (state && state.websiteData && Object.keys(state.websiteData).length !== 0) {
+      setWebSite(state.websiteData);
+    } else {
       props.history.push(`${process.env.PUBLIC_URL}/profile`);
     }
-  }, [props.website.createWebsiteSuccess, props.history]);
-
-  useEffect(() => {
-    getDraftData();
   }, []);
 
-  const getDraftData = async () => {
-    const userId = (JSON.parse(localStorage.getItem("loginToken")) || {}).user
-      ?.user_id;
-    setUserId(userId);
-    const type = localStorage.getItem("type");
-    setType(type);
-    props.getDraft(userId);
-  };
+  useEffect(() => {
+    if (website?.uploads) {
+      const images = JSON.parse(website.uploads);
+      let imageData = images.map((item, index) => {
+        return `${API_DOMAIN}/api/uploads/${item}`;
+      });
+
+      setFiles(imageData);
+    }
+  }, [website]);
 
   const handleChange = (e) => {
     setFiles([]);
     if (e?.target?.files) {
-      const files = Array.from(e.target.files);
-      props.uploadImages(files);
+      const ufiles = Array.from(e.target.files);
+      props.uploadImages(ufiles);
       Promise.all(
-        files.map((file) => {
+        ufiles.map((file) => {
           return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.addEventListener("load", (ev) => {
@@ -84,7 +82,8 @@ const CreateWeb = (props) => {
       ).then(
         (images) => {
           /* Once all promises are resolved, update state with image URI array */
-          setFiles(images);
+          //   const newFileSet = files.concat(images)
+          setFiles([...files, ...images]);
         },
         (error) => {
           console.error(error);
@@ -96,7 +95,7 @@ const CreateWeb = (props) => {
   const handleSubmit = (values) => {
     let data = values;
     data.userId = userId;
-    data.type = type;
+    data.type = website.type;
     data.uploads = JSON.stringify(props.website.files || []);
     props.createWebsite(data);
   };
@@ -114,16 +113,16 @@ const CreateWeb = (props) => {
         icon={faTimes}
         setShow={(showStatus) => setShowErrorToaster(showStatus)}
         show={showErrorToaster}
-        text={props.website.draftError}
+        text={props.website.updateWebsiteError}
         color="#FCC3B6"
         backgroundColor="#ff0000 "
       />
-      <div className={`container ${styles.background}`}>
+      <div className={`container ${styles.background} mb-5`}>
         {props.website.draftgetLoading && <Loader />}
         <div className={styles.cardBody}>
           <div className="row">
             <div className="col-lg-4"></div>
-            <div className="col-lg-4"></div>
+            <div className="col-lg-4"><h3 style={{ textAlign: "center" }}>Edit Website</h3></div>
             <div className="col-lg-4"></div>
           </div>
           <div className="row">
@@ -131,14 +130,14 @@ const CreateWeb = (props) => {
             <div className="col-lg-8">
               <Formik
                 initialValues={{
-                  cname: (drft || {}).companyName || "",
-                  about: (drft || {}).about || "",
-                  address: (drft || {}).address || "",
-                  email: (drft || {}).email || "",
-                  pnumber: (drft || {}).mobile || "",
+                  cname: (website || {}).companyName || "",
+                  about: (website || {}).about || "",
+                  address: (website || {}).address || "",
+                  email: (website || {}).email || "",
+                  pnumber: (website || {}).mobile || "",
                   photos: [],
                 }}
-                enableReinitialize={drft}
+                enableReinitialize={website}
                 validationSchema={Yup.object().shape({
                   cname: Yup.string().required(
                     "Company Name is required feild"
@@ -165,7 +164,7 @@ const CreateWeb = (props) => {
                       <div className="col-lg-3">
                         <p className={styles.lable}>Name of the company</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-9">
                         {" "}
                         <input
                           type="text"
@@ -175,40 +174,19 @@ const CreateWeb = (props) => {
                           onBlur={formprops.handleBlur("cname")}
                           className={styles.formInput}
                         />
-                      </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          className={styles.buttonSm}
-                          disabled={props.website.draftLoading}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("cname");
-                          }}
-                        >
-                          {props.website.draftLoading && clicked === "cname" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
+                        {formprops.errors.cname &&
+                        formprops.touched.cname  ? (
+                          <div className={styles.errorMessage}>
+                            {formprops.errors.cname}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                     <div className="row">
                       <div className="col-lg-3">
                         <p className={styles.lable}>About</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-9">
                         {" "}
                         <textarea
                           id="about"
@@ -220,40 +198,19 @@ const CreateWeb = (props) => {
                           onBlur={formprops.handleBlur("about")}
                           className={styles.formInput}
                         ></textarea>
-                      </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          disabled={props.website.draftLoading}
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("about");
-                          }}
-                        >
-                          {props.website.draftLoading && clicked === "about" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
+                        {formprops.errors.about &&
+                        formprops.touched.about ? (
+                          <div className={styles.errorMessage}>
+                            {formprops.errors.about}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                     <div className="row">
                       <div className="col-lg-3">
                         <p className={styles.lable}>Address</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-9">
                         {" "}
                         <textarea
                           id="address"
@@ -265,41 +222,19 @@ const CreateWeb = (props) => {
                           onBlur={formprops.handleBlur("address")}
                           className={styles.formInput}
                         ></textarea>
-                      </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          disabled={props.website.draftLoading}
-                          size="sm"
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("address");
-                          }}
-                        >
-                          {props.website.draftLoading &&
-                          clicked === "address" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
+                        {formprops.errors.address &&
+                        formprops.touched.address ? (
+                          <div className={styles.errorMessage}>
+                            {formprops.errors.address}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                     <div className="row">
                       <div className="col-lg-3">
                         <p className={styles.lable}>Email</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-9">
                         {" "}
                         <input
                           type="email"
@@ -310,44 +245,11 @@ const CreateWeb = (props) => {
                           className={styles.formInput}
                         />
                         {formprops.errors.email &&
-                        formprops.touched.email &&
-                        formprops.values.email ? (
+                        formprops.touched.email ? (
                           <div className={styles.errorMessage}>
                             {formprops.errors.email}
                           </div>
                         ) : null}
-                      </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          disabled={
-                            props.website.draftLoading ||
-                            (formprops.errors.email &&
-                              formprops.touched.email &&
-                              formprops.values.email)
-                          }
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("email");
-                          }}
-                        >
-                          {props.website.draftLoading && clicked === "email" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
                       </div>
                     </div>
                     <div className="row">
@@ -364,34 +266,12 @@ const CreateWeb = (props) => {
                           onBlur={formprops.handleBlur("pnumber")}
                           className={styles.formInput}
                         />
-                      </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          disabled={props.website.draftLoading}
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("pnumber");
-                          }}
-                        >
-                          {props.website.draftLoading &&
-                          clicked === "pnumber" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
+                        {formprops.errors.pnumber &&
+                        formprops.touched.pnumber ? (
+                          <div className={styles.errorMessage}>
+                            {formprops.errors.pnumber}
+                          </div>
+                        ) : null}
                       </div>
                     </div>
                     <div className="row">
@@ -431,7 +311,8 @@ const CreateWeb = (props) => {
                             <>Browse</>
                           )}
                         </Button>
-                        {files.length !== 0 && props.website.files ? (
+                        {files.length !== 0 &&
+                        !props.website.fileUploadLoading ? (
                           <div className="row">
                             {files.map((item, index) => {
                               return (
@@ -466,11 +347,10 @@ const CreateWeb = (props) => {
                           onClick={formprops.handleSubmit}
                           disabled={
                             Object.keys(formprops.errors).length !== 0 ||
-                            props.website.fileUploadLoading ||
-                            props.website.draftLoading
+                            props.website.fileUploadLoading
                           }
                         >
-                          Create web site
+                          Update web site
                         </Button>
                       </div>
                     </div>
@@ -492,9 +372,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, {
-  createDraft,
-  getDraft,
-  uploadImages,
-  createWebsite,
-})(withRouter(CreateWeb));
+export default connect(mapStateToProps, { uploadImages })(withRouter(Editweb));
