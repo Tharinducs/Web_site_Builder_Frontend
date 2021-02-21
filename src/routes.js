@@ -9,7 +9,9 @@ import CreateView from './views/createweb'
 import EditwebView from './views/editweb'
 import Webpage from './views/webpage'
 import ProfileView from './views/profile'
+import ChangePasswordView from './views/changepassword'
 
+//route configurations
 const routes = [
     {
         path: `${process.env.PUBLIC_URL}/`,
@@ -58,6 +60,12 @@ const routes = [
         exact: true,
         layout: LoginLayout,
         component: RequireAuth(ProfileView),
+    },
+    {
+        path: `${process.env.PUBLIC_URL}/changepassword`,
+        exact: true,
+        layout: LoginLayout,
+        component: RequireAuth(ChangePasswordView),
     }
 ]
 

@@ -2,15 +2,16 @@ import React from "react";
 import Intro from "./Intro";
 import About from "./About";
 import Services from "./Services";
+import { withRouter } from "react-router-dom";
 
-const Home = () => {
+const Home = (props) => {
   return (
     <>
-      <Intro />
+      <Intro history={props.history}/>
       <About />
       <Services />
     </>
   );
 };
 
-export default Home;
+export default withRouter(Home);

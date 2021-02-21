@@ -20,7 +20,8 @@ import {
   GET_WEBSITE_LOADING,
   UPDATE_WEBSITE_FAILED,
   UPDATE_WEBSITE_SUCCESS,
-  UPDATE_WEBSITE_LOADING
+  UPDATE_WEBSITE_LOADING,
+  CLEAR_UPDATE_DATA,
 } from "../../_helpers/constant";
 
 const initialValue = {
@@ -30,7 +31,7 @@ const initialValue = {
   draftgetLoading: false,
   drft: null,
   drftGetError: null,
-  files: null,
+  files: [],
   fileUploadLoading: false,
   fileUploadError: null,
   createWebsiteLoading: false,
@@ -92,7 +93,7 @@ const website = (state = initialValue, action) => {
     case UPLOAD_FILE_LOADING:
       return {
         ...state,
-        files: null,
+        files: [],
         fileUploadLoading: true,
         fileUploadError: null,
       };
@@ -106,7 +107,7 @@ const website = (state = initialValue, action) => {
     case UPLOAD_FILE_FAILED:
       return {
         ...state,
-        files: null,
+        files: [],
         fileUploadLoading: false,
         fileUploadError: action.payload,
       };
@@ -131,27 +132,34 @@ const website = (state = initialValue, action) => {
         createWebsiteError: action.payload,
         createWebsiteSuccess: false,
       };
-      case UPDATE_WEBSITE_LOADING:
-        return {
-          ...state,
-          updateWebsiteLoading: true,
-          updateWebsiteError: null,
-          updateWebsiteSuccess: false,
-        };
-      case UPDATE_WEBSITE_SUCCESS:
-        return {
-          ...state,
-          updateWebsiteLoading: false,
-          updateWebsiteError: null,
-          updateWebsiteSuccess: true,
-        };
-      case UPDATE_WEBSITE_FAILED:
-        return {
-          ...state,
-          updateWebsiteLoading: false,
-          updateWebsiteError: action.payload,
-          updateWebsiteSuccess: false,
-        };
+    case UPDATE_WEBSITE_LOADING:
+      return {
+        ...state,
+        updateWebsiteLoading: true,
+        updateWebsiteError: null,
+        updateWebsiteSuccess: false,
+      };
+    case UPDATE_WEBSITE_SUCCESS:
+      return {
+        ...state,
+        updateWebsiteLoading: false,
+        updateWebsiteError: null,
+        updateWebsiteSuccess: true,
+      };
+    case UPDATE_WEBSITE_FAILED:
+      return {
+        ...state,
+        updateWebsiteLoading: false,
+        updateWebsiteError: action.payload,
+        updateWebsiteSuccess: false,
+      };
+    case CLEAR_UPDATE_DATA:
+      return {
+        updateWebsiteLoading: false,
+        updateWebsiteError: null,
+        updateWebsiteSuccess: false,
+        files: [],
+      };
     case GET_WEBSITES_LOADING:
       return {
         ...state,
@@ -173,27 +181,27 @@ const website = (state = initialValue, action) => {
         websiteLoadingError: action.payload,
         websites: [],
       };
-      case GET_WEBSITE_LOADING:
-        return {
-          ...state,
-          websiteLoading: true,
-          websiteLoadingError: null,
-          website: null,
-        };
-      case GET_WEBSITE_SUCCESS:
-        return {
-          ...state,
-          websiteLoading: false,
-          websiteLoadingError: null,
-          website: action.payload,
-        };
-      case GET_WEBSITE_FAILED:
-        return {
-          ...state,
-          websiteLoading: false,
-          websiteLoadingError: action.payload,
-          website: null,
-        };
+    case GET_WEBSITE_LOADING:
+      return {
+        ...state,
+        websiteLoading: true,
+        websiteLoadingError: null,
+        website: null,
+      };
+    case GET_WEBSITE_SUCCESS:
+      return {
+        ...state,
+        websiteLoading: false,
+        websiteLoadingError: null,
+        website: action.payload,
+      };
+    case GET_WEBSITE_FAILED:
+      return {
+        ...state,
+        websiteLoading: false,
+        websiteLoadingError: action.payload,
+        website: null,
+      };
     default:
       return state;
   }

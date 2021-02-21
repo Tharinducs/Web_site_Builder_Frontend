@@ -25,7 +25,7 @@ const Login = (props) => {
     if (props.signUpProps.loginSuccess) {
       setShowToast(true);
       setTimeout(() => {
-        props.history.push(`${process.env.PUBLIC_URL}/category`);
+        props.history.push(`${process.env.PUBLIC_URL}/`);
       }, 1000);
     }
     //if error occured stop loader
@@ -143,6 +143,13 @@ const Login = (props) => {
                   </>
                 )}
               </Formik>
+            </div>
+            <div className="col-lg-4"></div>
+          </div>
+          <div className="row mt-5">
+            <div className="col-lg-4"></div>
+            <div className="col-lg-4">
+              <h6 style={{ textAlign: "center" }}>Not a member yet ? <a href={`${process.env.PUBLIC_URL}/register`}>Register</a></h6>
             </div>
             <div className="col-lg-4"></div>
           </div>

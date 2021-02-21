@@ -1,8 +1,9 @@
 import React from "react";
 import styles from "./Home.module.css";
 import { Button } from "react-bootstrap";
+import {authenticated} from "../../hoc/authenticated";
 
-const Intro = () => {
+const Intro = ({history}) => {
   return (
     <div id="intro" className={styles.module}>
       <div className="module-inside intro-body">
@@ -19,7 +20,13 @@ const Intro = () => {
                 <h2 className={styles.welcomeTextSecond}>WEBSITE BUILDER</h2>
               </div>
               <div className="row">
-                <Button variant="primary">Create Yours </Button>
+                <Button variant="primary" onClick ={()=>{
+                  if(authenticated()){
+                    history.push(`${process.env.PUBLIC_URL}/category`)
+                  }else{
+                    history.push(`${process.env.PUBLIC_URL}/login`)
+                  }
+                }}>Create Yours </Button>
               </div>
             </div>
             <div className="col-lg-2"></div>

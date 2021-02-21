@@ -11,7 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ToastView from "../../components/toast/Toast";
 import Loader from "../../components/loader/Loader";
-import { getWebsites } from "../../store/actions/website";
+import { getWebsites,clearUpdateData } from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -29,6 +29,7 @@ const Profile = (props) => {
 
   useEffect(() => {
     getUserData();
+    props.clearUpdateData();
   }, []);
 
   useEffect(() => {
@@ -44,16 +45,16 @@ const Profile = (props) => {
   };
   return (
     <>
+    {props.website.websiteLoading && <Loader />}
       <ToastView
         icon={faTimes}
         setShow={(showStatus) => setShowErrorToaster(showStatus)}
         show={showErrorToaster}
-        text={props.website.draftError}
+        text={props.website.websiteLoadingError}
         color="#FCC3B6"
         backgroundColor="#ff0000 "
       />
       <div className="container">
-        {props.website.websiteLoading && <Loader />}
         <div className="card mt-5 pl-5 pr-5 pt-5 pb-5">
           <div className="row">
             <div className="col-lg-8">
@@ -70,6 +71,11 @@ const Profile = (props) => {
                   className="mb-3"
                   style={{ marginLeft: -20 }}
                   variant="dark"
+                  onClick={()=>{
+                    props.history.push(
+                      `${process.env.PUBLIC_URL}/changepassword`
+                    );
+                  }}
                 >
                   Change Password
                 </Button>
@@ -96,7 +102,7 @@ const Profile = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.website.websites.map((item, index) => {
+              {props.website.websites && props.website.websites.map((item, index) => {
                 return (
                   <tr key={index}>
                     <td>{item.id}</td>
@@ -141,4 +147,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { getWebsites })(withRouter(Profile));
+export default connect(mapStateToProps, { getWebsites,clearUpdateData })(withRouter(Profile));

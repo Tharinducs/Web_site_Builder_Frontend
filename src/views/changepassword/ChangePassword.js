@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from "react";
-import styles from "./Register.module.css";
+import styles from "./ChangePassword.module.css";
 import { Formik, ErrorMessage } from "formik";
+import { Button, Spinner } from "react-bootstrap";
+import * as Yup from "yup";
 import { connect } from "react-redux";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { withRouter } from "react-router-dom";
 import ToastView from "../../components/toast/Toast";
-import { register } from "../../store/actions/login";
-import { Button, Spinner } from "react-bootstrap";
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
-import * as Yup from "yup";
+import { changePassword } from "../../store/actions/login";
 
-const Register = (props) => {
+const ChangePassword = (props) => {
   const [showToast, setShowToast] = useState(false);
   const [showErrorToaster, setShowErrorToaster] = useState(false);
+  const [user, setUser] = useState(null);
   useEffect(() => {
     document.body.style = "background: #bee8fa;";
 
@@ -19,31 +20,40 @@ const Register = (props) => {
       document.body.style = "background: #ffffff;";
     };
   }, []);
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   useEffect(() => {
     //if logged in success. redirect
-    if (props.signUpProps.registerSuccess) {
+    if (props.signUpProps.changePasswordSuccess) {
       setShowToast(true);
+      localStorage.removeItem("loginToken");
       setTimeout(() => {
-        props.history.push(`${process.env.PUBLIC_URL}/login`);
+        props.history.push(`${process.env.PUBLIC_URL}/`);
       }, 1000);
     }
     //if error occured stop loader
-    if (props.signUpProps.registerErorr) {
+    if (props.signUpProps.changePasswordError) {
       setShowErrorToaster(true);
     }
   }, [
-    props.signUpProps.registerSuccess,
-    props.signUpProps.registerErorr,
+    props.signUpProps.changePasswordSuccess,
+    props.signUpProps.changePasswordError,
     props.history,
   ]);
 
+  const getUserData = async () => {
+    const user = JSON.parse(await localStorage.getItem("loginToken")).user;
+
+    setUser(user);
+  };
+
   const handleSubmit = (values) => {
-    const registerData = {
-      username: values.username,
-      email: values.email,
-      password: values.password,
-    };
-    props.register(registerData);
+    let data = values;
+    data.user = user.username;
+    props.changePassword(data);
   };
   return (
     <>
@@ -51,7 +61,7 @@ const Register = (props) => {
         icon={faCheck}
         setShow={(showStatus) => setShowToast(showStatus)}
         show={showToast}
-        text={props.signUpProps.registerSuccess}
+        text="Successfully Changed!"
         color="#adf4ce"
         backgroundColor="#00823e"
       />
@@ -59,7 +69,7 @@ const Register = (props) => {
         icon={faTimes}
         setShow={(showStatus) => setShowErrorToaster(showStatus)}
         show={showErrorToaster}
-        text={props.signUpProps.registerErorr}
+        text={props.signUpProps.changePasswordError}
         color="#FCC3B6"
         backgroundColor="#ff0000 "
       />
@@ -68,7 +78,7 @@ const Register = (props) => {
           <div className="row">
             <div className="col-lg-4"></div>
             <div className="col-lg-4">
-              <h3 style={{ textAlign: "center" }}>Registration</h3>
+              <h3 style={{ textAlign: "center" }}>Change Password</h3>
             </div>
             <div className="col-lg-4"></div>
           </div>
@@ -77,16 +87,14 @@ const Register = (props) => {
             <div className="col-lg-4">
               <Formik
                 initialValues={{
-                  username: "",
-                  email: "",
+                  prvPassword: "",
                   password: "",
                   confirmP: "",
                 }}
                 validationSchema={Yup.object().shape({
-                  username: Yup.string().required("Username is required feild"),
-                  email: Yup.string()
-                    .email("Should be a valid email address")
-                    .required("Email is required Feild"),
+                  prvPassword: Yup.string().required(
+                    "Previous Password is required feiled"
+                  ),
                   password: Yup.string()
                     .required("Password is required feiled")
                     .matches(
@@ -112,32 +120,17 @@ const Register = (props) => {
                   <>
                     <div>
                       <input
-                        type="text"
-                        placeholder="Username"
-                        value={formprops.values.username}
-                        onChange={formprops.handleChange("username")}
-                        onBlur={formprops.handleBlur("username")}
+                        type="password"
+                        placeholder="Previous Password"
+                        value={formprops.values.prvPassword}
+                        onChange={formprops.handleChange("prvPassword")}
+                        onBlur={formprops.handleBlur("prvPassword")}
                         className={styles.formInput}
                       />
-                      {formprops.touched.username &&
-                      formprops.errors.username ? (
+                      {formprops.touched.prvPassword &&
+                      formprops.errors.prvPassword ? (
                         <div className={styles.errorMessage}>
-                          {formprops.errors.username}
-                        </div>
-                      ) : null}
-                    </div>
-                    <div>
-                      <input
-                        type="email"
-                        placeholder="Email"
-                        value={formprops.values.email}
-                        onChange={formprops.handleChange("email")}
-                        onBlur={formprops.handleBlur("email")}
-                        className={styles.formInput}
-                      />
-                      {formprops.touched.email && formprops.errors.email ? (
-                        <div className={styles.errorMessage}>
-                          {formprops.errors.email}
+                          {formprops.errors.prvPassword}
                         </div>
                       ) : null}
                     </div>
@@ -177,10 +170,10 @@ const Register = (props) => {
                     <Button
                       variant="dark"
                       className={styles.button}
-                      disabled={props.signUpProps.registerLoadding}
                       onClick={formprops.handleSubmit}
+                      disabled={props.signUpProps.changePasswordLoadding}
                     >
-                      {props.signUpProps.registerLoadding ? (
+                      {props.signUpProps.changePasswordLoadding ? (
                         <Spinner
                           as="span"
                           animation="border"
@@ -197,13 +190,6 @@ const Register = (props) => {
             </div>
             <div className="col-lg-4"></div>
           </div>
-          <div className="row mt-5">
-            <div className="col-lg-4"></div>
-            <div className="col-lg-4">
-              <h6 style={{ textAlign: "center" }}>Already a member ? <a href={`${process.env.PUBLIC_URL}/login`}>Login</a></h6>
-            </div>
-            <div className="col-lg-4"></div>
-          </div>
         </div>
       </div>
     </>
@@ -216,4 +202,6 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { register })(withRouter(Register));
+export default connect(mapStateToProps, { changePassword })(
+  withRouter(ChangePassword)
+);

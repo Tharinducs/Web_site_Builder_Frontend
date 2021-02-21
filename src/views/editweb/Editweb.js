@@ -8,12 +8,13 @@ import ToastView from "../../components/toast/Toast";
 import Loader from "../../components/loader/Loader";
 import { API_DOMAIN } from "../../_helpers/constant";
 import * as Yup from "yup";
-import { uploadImages } from "../../store/actions/website";
+import { uploadImages,updateWebsite } from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
 
 const Editweb = (props) => {
   const [website, setWebSite] = useState(null);
   const [files, setFiles] = useState([]);
+  const [previousUploads,setpreviousUploads] = useState([])
   const [clicked, setClicked] = useState(null);
   const [userId, setUserId] = useState(null);
   const [type, setType] = useState(null);
@@ -64,7 +65,6 @@ const Editweb = (props) => {
   }, [website]);
 
   const handleChange = (e) => {
-    setFiles([]);
     if (e?.target?.files) {
       const ufiles = Array.from(e.target.files);
       props.uploadImages(ufiles);
@@ -93,11 +93,18 @@ const Editweb = (props) => {
   };
 
   const handleSubmit = (values) => {
+    const prevUploads = JSON.parse(website?.uploads || "[]");
     let data = values;
-    data.userId = userId;
-    data.type = website.type;
-    data.uploads = JSON.stringify(props.website.files || []);
-    props.createWebsite(data);
+    data.userId = website.userId;
+    if(props.website.files && props.website.files.length !==0 && prevUploads && prevUploads.length !==0){
+        data.uploads = JSON.stringify([...props.website.files,...prevUploads] || []);
+    }else if(props.website.files && props.website.files.length !==0 &&  prevUploads.length ===0){
+        data.uploads = JSON.stringify(props.website.files || []);
+    }else if(props.website.files.length ===0){
+        data.uploads = JSON.stringify(prevUploads || [])
+    }
+    
+    props.updateWebsite(data);
   };
   return (
     <>
@@ -130,6 +137,8 @@ const Editweb = (props) => {
             <div className="col-lg-8">
               <Formik
                 initialValues={{
+                  id: ((website || {}).id || ""),
+                  type:((website || {}).type || ""),
                   cname: (website || {}).companyName || "",
                   about: (website || {}).about || "",
                   address: (website || {}).address || "",
@@ -141,6 +150,9 @@ const Editweb = (props) => {
                 validationSchema={Yup.object().shape({
                   cname: Yup.string().required(
                     "Company Name is required feild"
+                  ),
+                  id: Yup.string().required(
+                    "Id is required feild"
                   ),
                   about: Yup.string().required("About is required feild"),
                   address: Yup.string().required("Address is required feild"),
@@ -160,6 +172,42 @@ const Editweb = (props) => {
               >
                 {(formprops) => (
                   <>
+                   <div className="row">
+                      <div className="col-lg-3">
+                        <p className={styles.lable}>Website Id</p>
+                      </div>
+                      <div className="col-lg-9">
+                        {" "}
+                        <input
+                          type="text"
+                          placeholder="Company Name"
+                          value={formprops.values.id}
+                          readOnly={true}
+                          disabled={true}
+                          onChange={formprops.handleChange("id")}
+                          onBlur={formprops.handleBlur("id")}
+                          className={styles.formInput}
+                        />
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-lg-3">
+                        <p className={styles.lable}>Category</p>
+                      </div>
+                      <div className="col-lg-9">
+                        {" "}
+                        <input
+                          type="text"
+                          placeholder="Company Name"
+                          value={formprops.values.type}
+                          readOnly={true}
+                          disabled={true}
+                          onChange={formprops.handleChange("type")}
+                          onBlur={formprops.handleBlur("type")}
+                          className={styles.formInput}
+                        />
+                      </div>
+                    </div>
                     <div className="row">
                       <div className="col-lg-3">
                         <p className={styles.lable}>Name of the company</p>
@@ -347,10 +395,20 @@ const Editweb = (props) => {
                           onClick={formprops.handleSubmit}
                           disabled={
                             Object.keys(formprops.errors).length !== 0 ||
-                            props.website.fileUploadLoading
+                            props.website.fileUploadLoading || props.website.updateWebsiteLoading
                           }
                         >
-                          Update web site
+                            {props.website.updateWebsiteLoading ? (
+                            <Spinner
+                              as="span"
+                              animation="border"
+                              role="status"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <> Update web site</>
+                          )}
+                          
                         </Button>
                       </div>
                     </div>
@@ -372,4 +430,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { uploadImages })(withRouter(Editweb));
+export default connect(mapStateToProps, { uploadImages,updateWebsite })(withRouter(Editweb));

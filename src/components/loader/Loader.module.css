@@ -3,14 +3,14 @@
     z-index: 1500;
     top: 0px;
     bottom: 0px;
-    height: 130%;
+    height: 100%;
     width: 100%;
     display: flex;
     opacity: 0.8;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 10%;
+    padding-top: 10%;
     background-color: #cbebf8;
 }
 

@@ -20,7 +20,8 @@ import {
   GET_WEBSITES_FAILED,
   UPDATE_WEBSITE_FAILED,
   UPDATE_WEBSITE_SUCCESS,
-  UPDATE_WEBSITE_LOADING
+  UPDATE_WEBSITE_LOADING,
+  CLEAR_UPDATE_DATA
 } from "../../_helpers/constant";
 
 import axios from "axios";
@@ -146,7 +147,7 @@ const createWebsiteFailed = (dispatch, error) =>
   export const updateWebsite = (value) => (dispatch) => {
     updateWebsiteLoadding(dispatch);
     axios
-      .post(API_URL + "/website/createwebsite", value, {
+      .put(API_URL + "/website/updateWebsite", value, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -224,5 +225,12 @@ const createWebsiteFailed = (dispatch, error) =>
       dispatch({ type: GET_WEBSITE_SUCCESS, payload:data });
     const getWebsiteIdFailed = (dispatch, error) =>
       dispatch({ type: GET_WEBSITE_FAILED, payload:error });
+
+
+  export const clearUpdateData = () =>dispatch =>{
+    clearUpdatewebsiteData(dispatch)
+  }
+
+  const clearUpdatewebsiteData = (dispatch) => dispatch({type: CLEAR_UPDATE_DATA});
     
   

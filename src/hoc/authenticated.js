@@ -1,4 +1,4 @@
-const authenticated = () => {
+export const authenticated = () => {
   let token = localStorage.getItem("loginToken");
   token = JSON.parse(token);
   if (token && token.accesstoken) {
@@ -8,4 +8,4 @@ const authenticated = () => {
   }
 };
 
-export default authenticated;
+

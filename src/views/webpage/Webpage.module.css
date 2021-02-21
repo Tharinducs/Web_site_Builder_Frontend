@@ -2,6 +2,17 @@
     font-size: 18px;
 }
 
+
+.ul{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.li{
+    height: 40vh;
+    flex-grow: 1;
+}
+
 .navBar{
     background-color: #F9F4F9 !important;
     position: fixed;
@@ -19,6 +30,7 @@
 .gImage{
     max-width: 100%;
     height: 200px;
+    object-fit:cover;
     -webkit-transition: .3s ease-in-out;
 	transition: .3s ease-in-out;
 }

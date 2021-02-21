@@ -5,6 +5,9 @@ import {
   LOGIN_LOADING,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
+  CHANGE_PASSWORD_FAILED,
+  CHANGE_PASSWORD_LOADING,
+  CHANGE_PASSWORD_SUCCESS
 } from "../../_helpers/constant";
 
 const initialValue = {
@@ -13,7 +16,10 @@ const initialValue = {
   registerErorr: null,
   loginLoadding:false,
   loginSuccess:false,
-  loginError:null
+  loginError:null,
+  changePasswordLoadding:false,
+  changePasswordSuccess:false,
+  changePasswordError:null
 };
 
 const login = (state = initialValue, action) => {
@@ -60,6 +66,27 @@ const login = (state = initialValue, action) => {
           loginSuccess:false,
           loginError:action.payload
         }
+        case CHANGE_PASSWORD_LOADING:
+          return {
+            ...state,
+            changePasswordLoadding:true,
+            changePasswordSuccess:false,
+            changePasswordError:null
+          }
+        case CHANGE_PASSWORD_SUCCESS:
+          return{
+            ...state,
+            changePasswordLoadding:false,
+            changePasswordSuccess:true,
+            changePasswordError:null
+          }
+        case CHANGE_PASSWORD_FAILED:
+          return {
+            ...state,
+            changePasswordLoadding:false,
+            changePasswordSuccess:false,
+            changePasswordError:action.payload
+          }
     default:
       return state;
   }

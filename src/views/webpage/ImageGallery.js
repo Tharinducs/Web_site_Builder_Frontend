@@ -1,20 +1,17 @@
 import React from "react";
 import styles from "./Webpage.module.css";
-import {API_DOMAIN} from "../../_helpers/constant"
+import { API_DOMAIN } from "../../_helpers/constant";
 
-const ImageGallery = ({website}) => {
-
-  const images = JSON.parse(website.uploads)
-  // const images = []
+//components to handle image gallery of the created website
+const ImageGallery = ({ website }) => {
+  const images = JSON.parse(website.uploads);//parsing json strings
   return (
     <div className="container pt-5 pb-5">
       <div className="row">
         <div className="col-lg-4"></div>
         <div className="col-lg-4">
           <div className={styles.sectiontitle}>
-            <h2 style={{ textAlign: "center" }}>
-              IMAGE GALLERY
-            </h2>
+            <h2 style={{ textAlign: "center" }}>IMAGE GALLERY</h2>
           </div>
         </div>
         <div className="col-lg-4"></div>
@@ -31,7 +28,6 @@ const ImageGallery = ({website}) => {
         })}
        
       </div>
-      
     </div>
   );
 };

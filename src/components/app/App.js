@@ -11,7 +11,10 @@ import { getToken } from "../../store/actions/login"
 const App = () => {
   let token = localStorage.getItem('loginToken');
   token = JSON.parse(token);
+  //global url configurations
   axios.defaults.baseURL = `${API_DOMAIN}/api/`
+
+  //token refresh on expired login token
   if (token && token.accesstoken) {
     axios.defaults.headers.common.Authorization = `Bearer ${token.accesstoken}`;
     axios.interceptors.response.use((response) => {
@@ -38,6 +41,8 @@ const App = () => {
       return Promise.reject(error);
     });
   }
+
+  //route configurations
   return (
     <div className="App">
       <Router history={history}>

@@ -8,9 +8,12 @@ import {
   faClipboardList,
   faSignInAlt,
   faSignOutAlt,
+  faUserAlt
 } from "@fortawesome/free-solid-svg-icons";
-import Scroll from 'react-scroll'
-const ScrollLink = Scroll.ScrollLink
+import {authenticated} from "../../hoc/authenticated";
+import { withRouter } from "react-router-dom";
+import Scroll from "react-scroll";
+const ScrollLink = Scroll.ScrollLink;
 
 const Header = () => {
   return (
@@ -48,28 +51,52 @@ const Header = () => {
             {" "}
             <FontAwesomeIcon icon={faClipboardList} /> Services
           </Nav.Link>
-          <Nav.Link
-            href={`${process.env.PUBLIC_URL}/register`}
-            className={styles.navItem}
-          >
-            {" "}
-            <FontAwesomeIcon icon={faSignInAlt} /> Register
-          </Nav.Link>
-          <Nav.Link
-            href={`${process.env.PUBLIC_URL}/login`}
-            className={styles.navItem}
-          >
-            {" "}
-            <FontAwesomeIcon icon={faSignInAlt} /> Login
-          </Nav.Link>
-          <Nav.Link href="#link" className={styles.navItem}>
-            {" "}
-            <FontAwesomeIcon icon={faSignOutAlt} /> Logout
-          </Nav.Link>
+          {!authenticated() && (
+            <Nav.Link
+              href={`${process.env.PUBLIC_URL}/register`}
+              className={styles.navItem}
+            >
+              {" "}
+              <FontAwesomeIcon icon={faSignInAlt} /> Register
+            </Nav.Link>
+          )}
+          {!authenticated() && (
+            <Nav.Link
+              href={`${process.env.PUBLIC_URL}/login`}
+              className={styles.navItem}
+            >
+              {" "}
+              <FontAwesomeIcon icon={faSignInAlt} /> Login
+            </Nav.Link>
+          )}
+          {authenticated() && (
+            <Nav.Link
+              className={styles.navItem}
+              href={`${process.env.PUBLIC_URL}/profile`}
+            >
+              {" "}
+              <FontAwesomeIcon icon={faUserAlt} /> Profile
+            </Nav.Link>
+            
+          )}
+          {authenticated() && (
+            <Nav.Link
+              className={styles.navItem}
+              href={`${process.env.PUBLIC_URL}/`}
+              onClick={() => {
+                localStorage.removeItem("loginToken");
+              }}
+            >
+              {" "}
+              <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+            </Nav.Link>
+            
+          )}
+           
         </Nav>
       </Navbar.Collapse>
     </Navbar>
   );
 };
 
-export default Header;
+export default (withRouter(Header));

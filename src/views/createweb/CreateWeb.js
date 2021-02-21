@@ -102,6 +102,7 @@ const CreateWeb = (props) => {
   };
   return (
     <>
+    {props.website.draftgetLoading && <Loader />}
       <ToastView
         icon={faCheck}
         setShow={(showStatus) => setShowToast(showStatus)}
@@ -119,7 +120,7 @@ const CreateWeb = (props) => {
         backgroundColor="#ff0000 "
       />
       <div className={`container ${styles.background}`}>
-        {props.website.draftgetLoading && <Loader />}
+        
         <div className={styles.cardBody}>
           <div className="row">
             <div className="col-lg-4"></div>
@@ -467,10 +468,19 @@ const CreateWeb = (props) => {
                           disabled={
                             Object.keys(formprops.errors).length !== 0 ||
                             props.website.fileUploadLoading ||
-                            props.website.draftLoading
+                            props.website.draftLoading || props.website.createWebsiteLoading
                           }
                         >
-                          Create web site
+                          {props.website.createWebsiteLoading ? (
+                            <Spinner
+                              as="span"
+                              animation="border"
+                              role="status"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <> Create web site</>
+                          )}
                         </Button>
                       </div>
                     </div>

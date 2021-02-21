@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./Webpage.module.css";
 import { Button } from "react-bootstrap";
 
+//component to render banner image
 const Intro = ({image,cname}) => {
   return (
     <div id="intro" className={image}>

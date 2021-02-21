@@ -6,6 +6,9 @@ import {
   REGISTER_FAILED,
   REGISTER_LOADING,
   REGISTER_SUCCESS,
+  CHANGE_PASSWORD_FAILED,
+  CHANGE_PASSWORD_LOADING,
+  CHANGE_PASSWORD_SUCCESS
 } from "../../_helpers/constant";
 
 import axios from "axios";
@@ -78,3 +81,33 @@ const loginSuccess = (dispatch, data) =>
   dispatch({ type: LOGIN_SUCCESS, payload: data });
 const loginFailed = (dispatch, error) =>
   dispatch({ type: LOGIN_FAILED, payload: error });
+
+  export const changePassword = (value) => (dispatch) => {
+    changePasswordLoadding(dispatch);
+    axios
+      .post(API_URL + "/user/changepassword", value, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((data) => {
+          changePasswordSuccess(dispatch, data.data);
+      })
+      .catch((error) => {
+        if (error.request && error.request.response) {
+          changePasswordFailed(
+            dispatch,
+            error.response.data.msg || "Something went wrong"
+          );
+        } else {
+          changePasswordFailed(dispatch, "Something went wrong");
+        }
+      });
+  };
+  
+  const changePasswordLoadding = (dispatch) => dispatch({ type: CHANGE_PASSWORD_LOADING });
+  const changePasswordSuccess = (dispatch, data) =>
+    dispatch({ type: CHANGE_PASSWORD_SUCCESS, payload: data });
+  const changePasswordFailed = (dispatch, error) =>
+    dispatch({ type: CHANGE_PASSWORD_FAILED, payload: error });
+  

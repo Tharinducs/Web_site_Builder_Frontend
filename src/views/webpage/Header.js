@@ -8,10 +8,11 @@ import {
   faImage,
 } from "@fortawesome/free-solid-svg-icons";
 
+
+//created website header
 const Header = () => {
   return (
     <Navbar bg="light" expand="lg" className={styles.navBar}>
-      {/* <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand> */}
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
         <Nav className="ml-auto">

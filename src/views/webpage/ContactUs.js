@@ -7,6 +7,8 @@ import {
   faMobile,
 } from "@fortawesome/free-solid-svg-icons";
 
+
+//contact us section
 const ContactUs = ({ website }) => {
   return (
     <div className={styles.aboutBack} id="contact">
