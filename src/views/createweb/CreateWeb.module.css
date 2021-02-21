@@ -1,0 +1,90 @@
+
+.image{
+    height: 80px;
+    width: 100%;
+}
+
+.cardBody{
+    margin-top: 10%;
+}
+
+.formInput{
+    width: 100% !important;
+    border: none !important;
+    height: 40px;
+    padding-left: 4%;
+    border-radius: 5px;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.formInput:focus{
+    border: none !important;
+}
+
+.formInputF{
+    display: none;
+}
+
+.button{
+    width: 100%;
+    margin-top: 5%;
+    height: 45px;
+}
+
+.buttonSm{
+    width: 100%;
+    margin-top: 12%;
+}
+
+.errorMessage{
+    color: #ff3d3d;
+    font-size:13px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+
+.lable{
+    flex-direction: column;
+    letter-spacing: 1.08px;
+    color: #2d2d2d;
+    padding-top: 1%;
+    padding-bottom: 3%;
+    margin-top: 10% !important;
+    justify-content: center;
+    align-items: center;
+}
+
+@media(max-width: 600px) {
+    .buttonSm{
+        display: none !important;
+    }
+
+    .lable{
+        margin-top: 2% !important;
+    }
+
+    .formInput{
+        margin-top: -4% !important;
+    }
+}
+
+@media  (min-width: 601px) and (max-width: 991px){
+    .buttonSm{
+        display: none !important;
+    }
+
+    .lable{
+        margin-top: 2% !important;
+    }
+
+    .formInput{
+        margin-top: -4% !important;
+        margin-bottom: 1% !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    
+}
