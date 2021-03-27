@@ -22,16 +22,20 @@ const Webpage = (props) => {
 
   //access the website data from url state data
   useEffect(() => {
+    console.log("Inside use effect")
     const state = props.location.state;
+    console.log({state})
     if(state && !props.location.state.from){
       props.history.push(`${process.env.PUBLIC_URL}/`);
     }
     if(props.location?.state?.from === 'create'){
        getLocalStorageData()
     }else{
+      console.log("HIIIIii I am hre inside above else")
       if(!authenticated()){
         props.history.push(`${process.env.PUBLIC_URL}/`);
       }else{
+        console.log("HIIIIii I am hre inside else")
         if (
           state &&
           state.websiteData &&
@@ -50,25 +54,15 @@ const Webpage = (props) => {
     const data = JSON.parse(localStorage.getItem('formData'))
      setWebSite(data)
   }
+  console.log(props.location,"lo")
+  console.log({website});
 
   return (
     <>
       <Header history={props.history} location={props.location?.state?.from}/>
       <div className={styles.back}>
         <div>
-          {/* render diferent cover photo opon the website type */}
-          {website && website.type && website.type === "Resturant" && (
-            <Intro image={styles.moduler} cname={props.location?.state?.from === 'create' ? website.cname : website.companyName} />
-          )}
-          {website && website.type && website.type === "Fashion" && (
-            <Intro image={styles.modulef} cname={props.location?.state?.from === 'create' ? website.cname : website.companyName} />
-          )}
-          {website && website.type && website.type === "Online Store" && (
-            <Intro image={styles.moduleg} cname={props.location?.state?.from === 'create' ? website.cname : website.companyName} />
-          )}
-          {website && website.type && website.type === "Travel" && (
-            <Intro image={styles.modulet} cname={props.location?.state?.from === 'create' ? website.cname : website.companyName} />
-          )}
+            {website && <Intro image={styles.moduler} cname={props.location?.state?.from === 'create' ? website.cname : website.companyName} uCover={website?.cover}/>}
         </div>
         {website && (
           <>

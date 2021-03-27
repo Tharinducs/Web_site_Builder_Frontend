@@ -13,6 +13,9 @@ import {
   updateWebsite,
   setImageData,
   clearImageData,
+  setCoverData,
+  clearCoverData,
+  uploadCover,
 } from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
 import Map from "../../components/map/CreateMap";
@@ -42,6 +45,7 @@ const Editweb = (props) => {
   useEffect(()=>{
     return ()=>{
       props.clearImageData();
+      props.clearCoverData();
     }
   },[])
 
@@ -75,6 +79,9 @@ const Editweb = (props) => {
         const images = JSON.parse(state.websiteData?.uploads);
         props.setImageData(images);
       }
+      if(state.websiteData?.cover){
+        props.setCoverData(state.websiteData?.cover)
+      }
       setLat(address.lat || null);
       setLng(address.lng || null);
       setWebSite(state.websiteData);
@@ -90,6 +97,11 @@ const Editweb = (props) => {
     }
   };
 
+  const handleCover = (uFiles) =>{
+    const nFiles = Array.from(uFiles);
+    props.uploadCover(nFiles,props.website.cover);
+  }
+
   const handleSubmit = (values) => {
     const prevUploads = (props.website.files || []).map((item, index) => {
       return item.split("/").pop();
@@ -97,6 +109,7 @@ const Editweb = (props) => {
     let data = values;
     data.userId = website.userId;
     data.uploads = JSON.stringify(prevUploads);
+    data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
     props.updateWebsite(data);
   };
   return (
@@ -166,10 +179,10 @@ const Editweb = (props) => {
                 {(formprops) => (
                   <>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Website Id</p>
                       </div>
-                      <div className="col-lg-9">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="text"
@@ -184,10 +197,10 @@ const Editweb = (props) => {
                       </div>
                     </div>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Category</p>
                       </div>
-                      <div className="col-lg-9">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="text"
@@ -202,10 +215,10 @@ const Editweb = (props) => {
                       </div>
                     </div>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Name of the company</p>
                       </div>
-                      <div className="col-lg-9">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="text"
@@ -223,10 +236,10 @@ const Editweb = (props) => {
                       </div>
                     </div>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>About</p>
                       </div>
-                      <div className="col-lg-9">
+                      <div className="col-lg-8">
                         {" "}
                         <textarea
                           id="about"
@@ -246,10 +259,10 @@ const Editweb = (props) => {
                       </div>
                     </div>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Address</p>
                       </div>
-                      <div className="col-lg-9">
+                      <div className="col-lg-8">
                         {" "}
                         <textarea
                           id="address"
@@ -279,10 +292,10 @@ const Editweb = (props) => {
                       lng={lng || null}
                     />
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Email</p>
                       </div>
-                      <div className="col-lg-9">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="email"
@@ -300,10 +313,10 @@ const Editweb = (props) => {
                       </div>
                     </div>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Phone Number</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="text"
@@ -322,10 +335,10 @@ const Editweb = (props) => {
                       </div>
                     </div>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Photos</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-8">
                       <Dropzone
                           className={styles.dropzone}
                           accept="image/gif,image/jpeg,image/jpg,image/png"
@@ -373,7 +386,55 @@ const Editweb = (props) => {
                           </div>
                         ) : null}
                       </div>
-                      <div className="col-lg-3"></div>
+                    </div>
+
+                    <div className="row mt-3">
+                      <div className="col-lg-4">
+                        <p className={styles.lable}>Cover Picture</p>
+                      </div>
+                      <div className="col-lg-8">
+                        <Dropzone
+                          className={styles.dropzone}
+                          multiple={false}
+                          accept="image/gif,image/jpeg,image/jpg,image/png"
+                          onDrop={(acceptedFiles) =>
+                            handleCover(acceptedFiles)
+                          }
+                        >
+                          {({ getRootProps, getInputProps }) => (
+                            <section className={styles.dropzone}>
+                              <div {...getRootProps({ className: "dropzone" })}>
+                                <input
+                                  {...getInputProps({
+                                    className: styles.formInput,
+                                  })}
+                                />
+                                <p>
+                                  Drag 'n' drop some files here, or click to
+                                  select files
+                                </p>
+                              </div>
+                            </section>
+                          )}
+                        </Dropzone>
+
+                        {props.website.cover  ? (
+                          <div className="row">
+                                <div className="col-lg-12">
+                                  <img
+                                    src={props.website.cover}
+                                    alt="uploded"
+                                    className={`img-thumbnail my-3 ${styles.image}`}
+                                  />
+                                </div>
+                          </div>
+                        ) : null}
+                        {props.website.coverUploadError ? (
+                          <div className={styles.errorMessage}>
+                            {props.website.coverUploadError}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
 
                     <div className="row">
@@ -426,4 +487,7 @@ export default connect(mapStateToProps, {
   updateWebsite,
   setImageData,
   clearImageData,
+  setCoverData,
+  clearCoverData,
+  uploadCover,
 })(withRouter(Editweb));

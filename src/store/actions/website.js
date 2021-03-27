@@ -13,6 +13,9 @@ import {
   UPLOAD_FILE_LOADING,
   UPLOAD_FILE_SUCCESS,
   UPLOAD_FILE_FAILED,
+  UPLOAD_COVER_LOADING,
+  UPLOAD_COVER_SUCCESS,
+  UPLOAD_COVER_FAILED,
   GET_WEBSITES_LOADING,
   GET_WEBSITE_FAILED,
   GET_WEBSITE_SUCCESS,
@@ -25,6 +28,8 @@ import {
   CLEAR_UPDATE_DATA,
   SET_IMAGE_FILES,
   CLEAR_IMAGE_FILES,
+  SET_COVER,
+  CLEAR_COVER,
 } from "../../_helpers/constant";
 
 import axios from "axios";
@@ -117,9 +122,49 @@ export const uploadImages = (files,old) =>{
 }
 
 
+export const uploadCover = (files,old) =>{
+  console.log(FileList)
+  var formData = new FormData();
+  // formData.append("uploadedImages",file)
+  files.map((item,index) =>{
+    formData.append('uploadedImages',item);
+  })
+
+  return dispatch =>{
+    uploadCoverLoadding(dispatch);
+    axios
+      .post(API_URL+ "/website/images",formData,{headers: {
+        "Content-Type": "multipart/form-data",
+      }})
+      .then((data) => {
+        console.log(data);
+        const imageData = data.data.files.map((item, index) => {
+          return `${API_DOMAIN}/api/uploads/${item}`;
+        });
+        
+        uploadCoverSuccess(dispatch, imageData[0]);
+      })
+      .catch((error) => {
+        if (error.request && error.request.response) {
+          uploadCoverError(
+            dispatch,
+            error.response.data.msg || "In File upload Something went wrong!",old
+          );
+        } else {
+          uploadCoverError(dispatch, "In File upload Something went wrong!",old);
+        }
+      });
+  }
+}
+
+
 const uploadImageLoadding = (dispatch) =>dispatch({type: UPLOAD_FILE_LOADING});
 const uploadImageSuccess = (dispatch,data) =>dispatch({type: UPLOAD_FILE_SUCCESS, payload:data});
 const uploadImageError = (dispatch,error,old) => dispatch({type: UPLOAD_FILE_FAILED,payload:error,old:old})
+
+const uploadCoverLoadding = (dispatch) =>dispatch({type: UPLOAD_COVER_LOADING});
+const uploadCoverSuccess = (dispatch,data) =>dispatch({type: UPLOAD_COVER_SUCCESS, payload:data});
+const uploadCoverError = (dispatch,error,old) => dispatch({type: UPLOAD_COVER_FAILED,payload:error,old:old})
 
 
 export const createWebsite = (value) => (dispatch) => {
@@ -255,3 +300,17 @@ const createWebsiteFailed = (dispatch, error) =>
   const setImageFiles = (dispatch,images) => dispatch({type: SET_IMAGE_FILES,payload:images});
   const clearImageFiles = (dispatch) =>dispatch({type: CLEAR_IMAGE_FILES});
   
+
+  
+  export const setCoverData = (image) => dispatch =>{
+    const imageData = `${API_DOMAIN}/api/uploads/${image}`
+    setCoverFiles(dispatch,imageData);
+  }
+
+  export const clearCoverData = () =>dispatch =>{
+    clearCoverFiles(dispatch);
+  }
+
+
+  const setCoverFiles = (dispatch,images) => dispatch({type: SET_COVER,payload:images});
+  const clearCoverFiles = (dispatch) =>dispatch({type: CLEAR_COVER});

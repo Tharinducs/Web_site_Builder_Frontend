@@ -15,6 +15,9 @@ import {
   createWebsite,
   setImageData,
   clearImageData,
+  uploadCover,
+  setCoverData,
+  clearCoverData,
 } from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
 import Map from "../../components/map/CreateMap";
@@ -53,6 +56,9 @@ const CreateWeb = (props) => {
       const images = JSON.parse(drft.uploads);
       props.setImageData(images);
     }
+    if(drft?.cover){
+      props.setCoverData(drft?.cover)
+    }
     if (drft?.address) {
       const address = JSON.parse(drft?.address);
       setLat(address.lat || null);
@@ -87,6 +93,7 @@ const CreateWeb = (props) => {
   useEffect(()=>{
     return ()=>{
       props.clearImageData();
+      props.clearCoverData();
     }
   },[])
   const getDraftData = async () => {
@@ -104,6 +111,9 @@ const CreateWeb = (props) => {
           props.clearImageData();
           const images = JSON.parse(userData.uploads);
           props.setImageData(images);
+        }
+        if(userData?.cover){
+          props.setCoverData(userData?.cover)
         }
         if (userData?.address) {
           const address = JSON.parse(userData?.address);
@@ -132,6 +142,14 @@ const CreateWeb = (props) => {
             const images = JSON.parse(userData.uploads);
             props.setImageData(images);
           }
+          if (userData?.address) {
+            const address = JSON.parse(userData?.address);
+            setLat(address.lat || null);
+            setLng(address.lng || null);
+          }
+          if(userData?.cover){
+            props.setCoverData(userData?.cover)
+          }
           setTemporyDraft(userData);
         }
         setLodder(false);
@@ -146,6 +164,11 @@ const CreateWeb = (props) => {
     }
   };
 
+  const handleCover = (uFiles) =>{
+    const nFiles = Array.from(uFiles);
+    props.uploadCover(nFiles,props.website.cover);
+  }
+
   const handleSubmit = (values) => {
     const prevUploads = (props.website.files || []).map((item, index) => {
       return item.split("/").pop();
@@ -154,6 +177,7 @@ const CreateWeb = (props) => {
     data.userId = userId;
     data.type = type;
     data.uploads = JSON.stringify(prevUploads);
+    data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
     props.createWebsite(data);
   };
 
@@ -203,7 +227,6 @@ const CreateWeb = (props) => {
                   pnumber: !notLoggedIn
                     ? (drft || {}).mobile || ""
                     : (temporyDraft || {}).pnumber || "",
-                  photos: [],
                 }}
                 enableReinitialize={drft || temporyDraft}
                 validationSchema={Yup.object().shape({
@@ -403,6 +426,55 @@ const CreateWeb = (props) => {
                       </div>
                     </div>
 
+                    <div className="row mt-3">
+                      <div className="col-lg-4">
+                        <p className={styles.lable}>Cover Picture</p>
+                      </div>
+                      <div className="col-lg-8">
+                        <Dropzone
+                          className={styles.dropzone}
+                          multiple={false}
+                          accept="image/gif,image/jpeg,image/jpg,image/png"
+                          onDrop={(acceptedFiles) =>
+                            handleCover(acceptedFiles)
+                          }
+                        >
+                          {({ getRootProps, getInputProps }) => (
+                            <section className={styles.dropzone}>
+                              <div {...getRootProps({ className: "dropzone" })}>
+                                <input
+                                  {...getInputProps({
+                                    className: styles.formInput,
+                                  })}
+                                />
+                                <p>
+                                  Drag 'n' drop some files here, or click to
+                                  select files
+                                </p>
+                              </div>
+                            </section>
+                          )}
+                        </Dropzone>
+
+                        {props.website.cover  ? (
+                          <div className="row">
+                                <div className="col-lg-12">
+                                  <img
+                                    src={props.website.cover}
+                                    alt="uploded"
+                                    className={`img-thumbnail my-3 ${styles.image}`}
+                                  />
+                                </div>
+                          </div>
+                        ) : null}
+                        {props.website.coverUploadError ? (
+                          <div className={styles.errorMessage}>
+                            {props.website.coverUploadError}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+
                     <div className="row">
                       <div className="col-lg-6">
                         {authenticated() && (
@@ -423,6 +495,7 @@ const CreateWeb = (props) => {
                                 let data = formprops.values;
                                 data.userId = userId;
                                 data.uploads = JSON.stringify(prevUploads);
+                                data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
                                 setClicked("pnumber");
                                 localStorage.setItem(
                                   "formData",
@@ -438,6 +511,7 @@ const CreateWeb = (props) => {
                                 data.userId = userId;
                                 data.type = type;
                                 data.uploads = JSON.stringify(prevUploads);
+                                data.cover =props.website.cover ? props.website.cover.split("/").pop() : null;
                                 props.createDraft(data);
                                 setClicked("pnumber");
                               }
@@ -473,6 +547,7 @@ const CreateWeb = (props) => {
                               data.userId = userId;
                               data.type = type;
                               data.uploads = JSON.stringify(prevUploads);
+                              data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
                               setClicked("pnumber");
                               localStorage.setItem(
                                 "formData",
@@ -561,4 +636,7 @@ export default connect(mapStateToProps, {
   createWebsite,
   setImageData,
   clearImageData,
+  uploadCover,
+  setCoverData,
+  clearCoverData,
 })(withRouter(CreateWeb));

@@ -1,11 +1,26 @@
 import React from "react";
 import styles from "./Webpage.module.css";
 import { Button } from "react-bootstrap";
+import { API_DOMAIN } from "../../_helpers/constant";
 
 //component to render banner image
-const Intro = ({image,cname}) => {
+const Intro = ({ image, cname, uCover }) => {
   return (
-    <div id="intro" className={image}>
+    <div
+      id="intro"
+      style={{
+        backgroundImage: "url("+API_DOMAIN+"/api/uploads/"+uCover+")",
+        backgroundPosition:"center",
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor:'#000',
+        width: "100%",
+        height:300,
+        marginTop:-50,
+        textAlign:'center',
+        color:'#fff'
+      }}
+    >
       <div className="module-inside intro-body">
         <div className="container">
           <div className="row mt-5">
