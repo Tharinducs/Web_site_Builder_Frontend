@@ -24,7 +24,12 @@ const Register = (props) => {
     if (props.signUpProps.registerSuccess) {
       setShowToast(true);
       setTimeout(() => {
-        props.history.push(`${process.env.PUBLIC_URL}/login`);
+        if(props.location?.state?.from === 'create'){
+          props.history.push(`${process.env.PUBLIC_URL}/login`,{from:'create'});
+        }else{
+          props.history.push(`${process.env.PUBLIC_URL}/login`);
+        }
+        
       }, 1000);
     }
     //if error occured stop loader
@@ -35,6 +40,7 @@ const Register = (props) => {
     props.signUpProps.registerSuccess,
     props.signUpProps.registerErorr,
     props.history,
+    props.location.state
   ]);
 
   const handleSubmit = (values) => {
@@ -200,7 +206,15 @@ const Register = (props) => {
           <div className="row mt-5">
             <div className="col-lg-4"></div>
             <div className="col-lg-4">
-              <h6 style={{ textAlign: "center" }}>Already a member ? <a href={`${process.env.PUBLIC_URL}/login`}>Login</a></h6>
+              <h6 style={{ textAlign: "center" }}>Already a member ?<div style={{textDecorationLine: 'underline',color:'#4a47a3'}}
+                  onClick={() => {
+                    props.history.push("login", {
+                      from: (props.location.state || {}).from || null,
+                    });
+                  }}
+                >
+                  Login
+                </div></h6>
             </div>
             <div className="col-lg-4"></div>
           </div>

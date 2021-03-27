@@ -125,7 +125,7 @@ const Profile = (props) => {
                         onClick={() => {
                           props.history.push(
                             `${process.env.PUBLIC_URL}/webpage`,
-                            { websiteData: item }
+                            { websiteData: item,from:'profile' }
                           );
                         }}
                       />

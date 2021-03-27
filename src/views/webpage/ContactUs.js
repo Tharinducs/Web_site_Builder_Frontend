@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect, useState} from "react";
 import styles from "./Webpage.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -6,10 +6,20 @@ import {
   faEnvelope,
   faMobile,
 } from "@fortawesome/free-solid-svg-icons";
+import Map from "../../components/map/ViewMap"
 
 
 //contact us section
-const ContactUs = ({ website }) => {
+const ContactUs = ({ website,from }) => {
+  const [lat,setLat] = useState(null);
+  const [lng,setLng] = useState(null);
+  useEffect(()=>{
+    if(website.address && website.address !== ""){
+      setLng(JSON.parse(website.address).lng)
+      setLat(JSON.parse(website.address).lat)
+   }
+  },[website])
+  
   return (
     <div className={styles.aboutBack} id="contact">
       <div className="container">
@@ -37,10 +47,12 @@ const ContactUs = ({ website }) => {
               <div className="mt-3">
                 <h3>Address</h3>
               </div>
+  
             </div>
             <div className={`${styles.textContainer} pb-3`}>
-              {website.address}
+              {website.address && website.address !== "" && JSON.parse(website.address).address}
             </div>
+           
           </div>
           <div className="col-lg-4">
             <div className={styles.iconContainer}>
@@ -69,10 +81,13 @@ const ContactUs = ({ website }) => {
               </div>
             </div>
             <div className={`${styles.textContainer} pb-3`}>
-              {website.mobile}
+              {from === 'create' ? website.pnumber :  website.mobile}
             </div>
           </div>
+
+          <Map lat={lat || null} lng={lng || null}/>
         </div>
+
       </div>
     </div>
   );

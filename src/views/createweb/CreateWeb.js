@@ -6,21 +6,37 @@ import { Button, Spinner } from "react-bootstrap";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import ToastView from "../../components/toast/Toast";
 import Loader from "../../components/loader/Loader";
+import { authenticated } from "../../hoc/authenticated";
 import * as Yup from "yup";
 import {
   createDraft,
   getDraft,
   uploadImages,
   createWebsite,
+  setImageData,
+  clearImageData,
+  uploadCover,
+  setCoverData,
+  clearCoverData,
 } from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
+import Map from "../../components/map/CreateMap";
+import Dropzone from "react-dropzone";
+import { API_DOMAIN } from "../../_helpers/constant";
 
 const CreateWeb = (props) => {
   const [files, setFiles] = useState([]);
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
+  const [lodder, setLodder] = useState(false);
   const [clicked, setClicked] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [notLoggedIn, setNotLoggedIn] = useState(false);
+  const [temporyDraft, setTemporyDraft] = useState(null);
   const [userId, setUserId] = useState(null);
   const [type, setType] = useState(null);
   const [showToast, setShowToast] = useState(false);
+  const mapPositions = [64.6328442, 17.0913073];
   const [showErrorToaster, setShowErrorToaster] = useState(false);
   const {
     website: { drft },
@@ -36,6 +52,21 @@ const CreateWeb = (props) => {
   }, []);
 
   useEffect(() => {
+    if (drft?.uploads) {
+      const images = JSON.parse(drft.uploads);
+      props.setImageData(images);
+    }
+    if(drft?.cover){
+      props.setCoverData(drft?.cover)
+    }
+    if (drft?.address) {
+      const address = JSON.parse(drft?.address);
+      setLat(address.lat || null);
+      setLng(address.lng || null);
+    }
+  }, [drft]);
+
+  useEffect(() => {
     //if logged in success. redirect
     if (props.website.draftSuccess) {
       setShowToast(true);
@@ -48,61 +79,111 @@ const CreateWeb = (props) => {
 
   useEffect(() => {
     if (props.website.createWebsiteSuccess) {
+      if (props.location?.state?.from === "createAfterLogin") {
+        localStorage.removeItem("formData");
+      }
       props.history.push(`${process.env.PUBLIC_URL}/profile`);
     }
-  }, [props.website.createWebsiteSuccess, props.history]);
+  }, [props.website.createWebsiteSuccess, props.history, props.location]);
 
   useEffect(() => {
     getDraftData();
   }, []);
 
+  useEffect(()=>{
+    return ()=>{
+      props.clearImageData();
+      props.clearCoverData();
+    }
+  },[])
   const getDraftData = async () => {
-    const userId = (JSON.parse(localStorage.getItem("loginToken")) || {}).user
-      ?.user_id;
-    setUserId(userId);
-    const type = localStorage.getItem("type");
-    setType(type);
-    props.getDraft(userId);
-  };
-
-  const handleChange = (e) => {
-    setFiles([]);
-    if (e?.target?.files) {
-      const files = Array.from(e.target.files);
-      props.uploadImages(files);
-      Promise.all(
-        files.map((file) => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.addEventListener("load", (ev) => {
-              resolve(ev.target.result);
-            });
-            reader.addEventListener("error", reject);
-            reader.readAsDataURL(file);
-          });
-        })
-      ).then(
-        (images) => {
-          /* Once all promises are resolved, update state with image URI array */
-          setFiles(images);
-        },
-        (error) => {
-          console.error(error);
+    if (props.location?.state?.from === "createAfterLogin") {
+      const userId = (JSON.parse(localStorage.getItem("loginToken")) || {}).user
+        ?.user_id;
+      setUserId(userId);
+      setLodder(true);
+      setNotLoggedIn(true);
+      const type = localStorage.getItem("type");
+      setType(type);
+      const userData = JSON.parse(localStorage.getItem("formData"));
+      if (userData && Object.keys(userData).length !== 0) {
+        if (userData?.uploads) {
+          props.clearImageData();
+          const images = JSON.parse(userData.uploads);
+          props.setImageData(images);
         }
-      );
+        if(userData?.cover){
+          props.setCoverData(userData?.cover)
+        }
+        if (userData?.address) {
+          const address = JSON.parse(userData?.address);
+          setLat(address.lat || null);
+          setLng(address.lng || null);
+        }
+        setTemporyDraft(userData);
+      }
+      setLodder(false);
+    } else {
+      const userId = (JSON.parse(localStorage.getItem("loginToken")) || {}).user
+        ?.user_id;
+      if (userId) {
+        setUserId(userId);
+        const type = localStorage.getItem("type");
+        setType(type);
+        props.getDraft(userId);
+      } else {
+        setLodder(true);
+        setNotLoggedIn(true);
+        const type = localStorage.getItem("type");
+        setType(type);
+        const userData = JSON.parse(localStorage.getItem("formData"));
+        if (userData && Object.keys(userData).length !== 0) {
+          if (userData?.uploads) {
+            const images = JSON.parse(userData.uploads);
+            props.setImageData(images);
+          }
+          if (userData?.address) {
+            const address = JSON.parse(userData?.address);
+            setLat(address.lat || null);
+            setLng(address.lng || null);
+          }
+          if(userData?.cover){
+            props.setCoverData(userData?.cover)
+          }
+          setTemporyDraft(userData);
+        }
+        setLodder(false);
+      }
     }
   };
 
+  const handleChange = (uFiles) => {
+    if (uFiles) {
+      const nFiles = Array.from(uFiles);
+      props.uploadImages(nFiles,props.website.files);
+    }
+  };
+
+  const handleCover = (uFiles) =>{
+    const nFiles = Array.from(uFiles);
+    props.uploadCover(nFiles,props.website.cover);
+  }
+
   const handleSubmit = (values) => {
+    const prevUploads = (props.website.files || []).map((item, index) => {
+      return item.split("/").pop();
+    });
     let data = values;
     data.userId = userId;
     data.type = type;
-    data.uploads = JSON.stringify(props.website.files || []);
+    data.uploads = JSON.stringify(prevUploads);
+    data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
     props.createWebsite(data);
   };
+
   return (
     <>
-    {props.website.draftgetLoading && <Loader />}
+      {(props.website.draftgetLoading || lodder) && <Loader />}
       <ToastView
         icon={faCheck}
         setShow={(showStatus) => setShowToast(showStatus)}
@@ -120,7 +201,6 @@ const CreateWeb = (props) => {
         backgroundColor="#ff0000 "
       />
       <div className={`container ${styles.background}`}>
-        
         <div className={styles.cardBody}>
           <div className="row">
             <div className="col-lg-4"></div>
@@ -132,14 +212,23 @@ const CreateWeb = (props) => {
             <div className="col-lg-8">
               <Formik
                 initialValues={{
-                  cname: (drft || {}).companyName || "",
-                  about: (drft || {}).about || "",
-                  address: (drft || {}).address || "",
-                  email: (drft || {}).email || "",
-                  pnumber: (drft || {}).mobile || "",
-                  photos: [],
+                  cname: !notLoggedIn
+                    ? (drft || {}).companyName || ""
+                    : (temporyDraft || {}).cname || "",
+                  about: !notLoggedIn
+                    ? (drft || {}).about || ""
+                    : (temporyDraft || {}).about || "",
+                  address: !notLoggedIn
+                    ? (drft || {}).address || ""
+                    : (temporyDraft || {}).address || "",
+                  email: !notLoggedIn
+                    ? (drft || {}).email || ""
+                    : (temporyDraft || {}).email || "",
+                  pnumber: !notLoggedIn
+                    ? (drft || {}).mobile || ""
+                    : (temporyDraft || {}).pnumber || "",
                 }}
-                enableReinitialize={drft}
+                enableReinitialize={drft || temporyDraft}
                 validationSchema={Yup.object().shape({
                   cname: Yup.string().required(
                     "Company Name is required feild"
@@ -163,10 +252,10 @@ const CreateWeb = (props) => {
                 {(formprops) => (
                   <>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Name of the company</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="text"
@@ -177,39 +266,17 @@ const CreateWeb = (props) => {
                           className={styles.formInput}
                         />
                       </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          className={styles.buttonSm}
-                          disabled={props.website.draftLoading}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("cname");
-                          }}
-                        >
-                          {props.website.draftLoading && clicked === "cname" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
-                      </div>
                     </div>
+                    {formprops.errors.cname && submitted && (
+                      <div className={styles.errorMessage}>
+                        {formprops.errors.cname}
+                      </div>
+                    )}
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>About</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-8">
                         {" "}
                         <textarea
                           id="about"
@@ -222,85 +289,50 @@ const CreateWeb = (props) => {
                           className={styles.formInput}
                         ></textarea>
                       </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          disabled={props.website.draftLoading}
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("about");
-                          }}
-                        >
-                          {props.website.draftLoading && clicked === "about" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
-                      </div>
                     </div>
+                    {formprops.errors.about && submitted && (
+                      <div className={styles.errorMessage}>
+                        {formprops.errors.about}
+                      </div>
+                    )}
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Address</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-8">
                         {" "}
                         <textarea
                           id="address"
-                          placeholder="Enter Address...."
+                          placeholder="Select location on the map...."
                           rows="4"
                           cols="50"
-                          value={formprops.values.address}
+                          readOnly={true}
+                          value={
+                            formprops.values.address !== ""
+                              ? JSON.parse(formprops.values.address).address
+                              : ""
+                          }
                           onChange={formprops.handleChange("address")}
                           onBlur={formprops.handleBlur("address")}
                           className={styles.formInput}
                         ></textarea>
                       </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          disabled={props.website.draftLoading}
-                          size="sm"
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("address");
-                          }}
-                        >
-                          {props.website.draftLoading &&
-                          clicked === "address" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
-                      </div>
                     </div>
+                    <Map
+                      setValue={formprops.setFieldValue}
+                      lat={lat || null}
+                      lng={lng || null}
+                    />
+                    {formprops.errors.address && submitted && (
+                      <div className={styles.errorMessage}>
+                        {formprops.errors.address}
+                      </div>
+                    )}
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Email</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="email"
@@ -318,44 +350,12 @@ const CreateWeb = (props) => {
                           </div>
                         ) : null}
                       </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          disabled={
-                            props.website.draftLoading ||
-                            (formprops.errors.email &&
-                              formprops.touched.email &&
-                              formprops.values.email)
-                          }
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("email");
-                          }}
-                        >
-                          {props.website.draftLoading && clicked === "email" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
-                      </div>
                     </div>
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Phone Number</p>
                       </div>
-                      <div className="col-lg-6">
+                      <div className="col-lg-8">
                         {" "}
                         <input
                           type="text"
@@ -366,75 +366,45 @@ const CreateWeb = (props) => {
                           className={styles.formInput}
                         />
                       </div>
-                      <div className="col-lg-3">
-                        <Button
-                          variant="dark"
-                          size="sm"
-                          disabled={props.website.draftLoading}
-                          className={styles.buttonSm}
-                          onClick={() => {
-                            var data = formprops.values;
-                            data.userId = userId;
-                            data.type = type;
-                            props.createDraft(data);
-                            setClicked("pnumber");
-                          }}
-                        >
-                          {props.website.draftLoading &&
-                          clicked === "pnumber" ? (
-                            <Spinner
-                              as="span"
-                              size="sm"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>save changes</>
-                          )}
-                        </Button>
-                      </div>
                     </div>
+                    {formprops.errors.pnumber && submitted && (
+                      <div className={styles.errorMessage}>
+                        {formprops.errors.pnumber}
+                      </div>
+                    )}
                     <div className="row">
-                      <div className="col-lg-3">
+                      <div className="col-lg-4">
                         <p className={styles.lable}>Photos</p>
                       </div>
-                      <div className="col-lg-6">
-                        <input
-                          ref={(e) => (filesRef = e)}
-                          id="files"
-                          type="file"
-                          name=""
+                      <div className="col-lg-8">
+                        <Dropzone
+                          className={styles.dropzone}
                           accept="image/gif,image/jpeg,image/jpg,image/png"
-                          title="Browse"
-                          onChange={(e) => handleChange(e)}
-                          multiple
-                          className={styles.formInputF}
-                        />
-                        <Button
-                          variant="outline-secondary"
-                          disabled={props.website.draftLoading}
-                          className={styles.button}
-                          onClick={() => {
-                            if (filesRef) {
-                              filesRef.click();
-                            }
-                          }}
+                          onDrop={(acceptedFiles) =>
+                            handleChange(acceptedFiles)
+                          }
                         >
-                          {props.website.fileUploadLoading ? (
-                            <Spinner
-                              as="span"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>Browse</>
+                          {({ getRootProps, getInputProps }) => (
+                            <section className={styles.dropzone}>
+                              <div {...getRootProps({ className: "dropzone" })}>
+                                <input
+                                  {...getInputProps({
+                                    className: styles.formInput,
+                                  })}
+                                />
+                                <p>
+                                  Drag 'n' drop some files here, or click to
+                                  select files
+                                </p>
+                              </div>
+                            </section>
                           )}
-                        </Button>
-                        {files.length !== 0 && props.website.files ? (
+                        </Dropzone>
+
+                        {props.website.files.length !== 0 &&
+                        props.website.files ? (
                           <div className="row">
-                            {files.map((item, index) => {
+                            {props.website.files.map((item, index) => {
                               return (
                                 <div className="col-lg-4" key={index}>
                                   <img
@@ -454,34 +424,191 @@ const CreateWeb = (props) => {
                           </div>
                         ) : null}
                       </div>
-                      <div className="col-lg-3"></div>
+                    </div>
+
+                    <div className="row mt-3">
+                      <div className="col-lg-4">
+                        <p className={styles.lable}>Cover Picture</p>
+                      </div>
+                      <div className="col-lg-8">
+                        <Dropzone
+                          className={styles.dropzone}
+                          multiple={false}
+                          accept="image/gif,image/jpeg,image/jpg,image/png"
+                          onDrop={(acceptedFiles) =>
+                            handleCover(acceptedFiles)
+                          }
+                        >
+                          {({ getRootProps, getInputProps }) => (
+                            <section className={styles.dropzone}>
+                              <div {...getRootProps({ className: "dropzone" })}>
+                                <input
+                                  {...getInputProps({
+                                    className: styles.formInput,
+                                  })}
+                                />
+                                <p>
+                                  Drag 'n' drop some files here, or click to
+                                  select files
+                                </p>
+                              </div>
+                            </section>
+                          )}
+                        </Dropzone>
+
+                        {props.website.cover  ? (
+                          <div className="row">
+                                <div className="col-lg-12">
+                                  <img
+                                    src={props.website.cover}
+                                    alt="uploded"
+                                    className={`img-thumbnail my-3 ${styles.image}`}
+                                  />
+                                </div>
+                          </div>
+                        ) : null}
+                        {props.website.coverUploadError ? (
+                          <div className={styles.errorMessage}>
+                            {props.website.coverUploadError}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
 
                     <div className="row">
-                      <div className="col-lg-3"></div>
-                      <div className="col-lg-2"></div>
-                      <div className="col-lg-7">
-                        <Button
-                          variant="dark"
-                          className={styles.button}
-                          onClick={formprops.handleSubmit}
-                          disabled={
-                            Object.keys(formprops.errors).length !== 0 ||
-                            props.website.fileUploadLoading ||
-                            props.website.draftLoading || props.website.createWebsiteLoading
-                          }
-                        >
-                          {props.website.createWebsiteLoading ? (
-                            <Spinner
-                              as="span"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <> Create web site</>
-                          )}
-                        </Button>
+                      <div className="col-lg-6">
+                        {authenticated() && (
+                          <Button
+                            variant="dark"
+                            disabled={props.website.draftLoading}
+                            className={styles.button}
+                            onClick={() => {
+                              if (
+                                props.location?.state?.from ===
+                                "createAfterLogin"
+                              ) {
+                                const prevUploads = (
+                                  props.website.files || []
+                                ).map((item, index) => {
+                                  return item.split("/").pop();
+                                });
+                                let data = formprops.values;
+                                data.userId = userId;
+                                data.uploads = JSON.stringify(prevUploads);
+                                data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
+                                setClicked("pnumber");
+                                localStorage.setItem(
+                                  "formData",
+                                  JSON.stringify(data)
+                                );
+                              } else {
+                                const prevUploads = (
+                                  props.website.files || []
+                                ).map((item, index) => {
+                                  return item.split("/").pop();
+                                });
+                                let data = formprops.values;
+                                data.userId = userId;
+                                data.type = type;
+                                data.uploads = JSON.stringify(prevUploads);
+                                data.cover =props.website.cover ? props.website.cover.split("/").pop() : null;
+                                props.createDraft(data);
+                                setClicked("pnumber");
+                              }
+                            }}
+                          >
+                            {props.website.draftLoading &&
+                            clicked === "pnumber" ? (
+                              <Spinner
+                                as="span"
+                                size="sm"
+                                animation="border"
+                                role="status"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <>save Draft</>
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                      <div className="col-lg-6">
+                        {!authenticated() ? (
+                          <Button
+                            variant="dark"
+                            className={styles.button}
+                            onClick={() => {
+                              const prevUploads = (
+                                props.website.files || []
+                              ).map((item, index) => {
+                                return item.split("/").pop();
+                              });
+                              var data = formprops.values;
+                              data.userId = userId;
+                              data.type = type;
+                              data.uploads = JSON.stringify(prevUploads);
+                              data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
+                              setClicked("pnumber");
+                              localStorage.setItem(
+                                "formData",
+                                JSON.stringify(data)
+                              );
+                              props.history.push("webpage", {
+                                from: "create",
+                                valid: formprops.isValid,
+                              });
+                            }}
+                            disabled={
+                              props.website.fileUploadLoading ||
+                              props.website.draftLoading ||
+                              props.website.createWebsiteLoading
+                            }
+                          >
+                            {props.website.createWebsiteLoading ? (
+                              <Spinner
+                                as="span"
+                                animation="border"
+                                role="status"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <> Save draft and preview</>
+                            )}
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="dark"
+                            className={styles.button}
+                            onClick={() => {
+                              formprops.handleSubmit();
+                              setSubmitted(true);
+                              if (
+                                props.location?.state?.from ===
+                                "createAfterLogin"
+                              ) {
+                                localStorage.removeItem("formData");
+                              }
+                            }}
+                            disabled={
+                              Object.keys(formprops.errors).length !== 0 ||
+                              props.website.fileUploadLoading ||
+                              !formprops.isValid ||
+                              props.website.draftLoading ||
+                              props.website.createWebsiteLoading
+                            }
+                          >
+                            {props.website.createWebsiteLoading ? (
+                              <Spinner
+                                as="span"
+                                animation="border"
+                                role="status"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <> Create web site</>
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </>
@@ -507,4 +634,9 @@ export default connect(mapStateToProps, {
   getDraft,
   uploadImages,
   createWebsite,
+  setImageData,
+  clearImageData,
+  uploadCover,
+  setCoverData,
+  clearCoverData,
 })(withRouter(CreateWeb));

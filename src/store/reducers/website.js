@@ -12,6 +12,9 @@ import {
   UPLOAD_FILE_FAILED,
   UPLOAD_FILE_LOADING,
   UPLOAD_FILE_SUCCESS,
+  UPLOAD_COVER_LOADING,
+  UPLOAD_COVER_SUCCESS,
+  UPLOAD_COVER_FAILED,
   GET_WEBSITES_LOADING,
   GET_WEBSITE_FAILED,
   GET_WEBSITES_FAILED,
@@ -22,6 +25,10 @@ import {
   UPDATE_WEBSITE_SUCCESS,
   UPDATE_WEBSITE_LOADING,
   CLEAR_UPDATE_DATA,
+  SET_IMAGE_FILES,
+  CLEAR_IMAGE_FILES,
+  SET_COVER,
+  CLEAR_COVER,
 } from "../../_helpers/constant";
 
 const initialValue = {
@@ -32,8 +39,11 @@ const initialValue = {
   drft: null,
   drftGetError: null,
   files: [],
+  cover: null,
   fileUploadLoading: false,
   fileUploadError: null,
+  coverUploadLoading: false,
+  coverUploadError: null,
   createWebsiteLoading: false,
   createWebsiteError: null,
   createWebsiteSuccess: false,
@@ -74,6 +84,7 @@ const website = (state = initialValue, action) => {
         ...state,
         draftgetLoading: true,
         drft: null,
+        files:[],
         drftGetError: null,
       };
     case GET_DRFT_SUCCESS:
@@ -107,10 +118,31 @@ const website = (state = initialValue, action) => {
     case UPLOAD_FILE_FAILED:
       return {
         ...state,
-        files: [],
+        files: [...action.old],
         fileUploadLoading: false,
         fileUploadError: action.payload,
       };
+      case UPLOAD_COVER_LOADING:
+        return {
+          ...state,
+          cover: null,
+          coverUploadLoading: true,
+          coverUploadError: null,
+        };
+      case UPLOAD_COVER_SUCCESS:
+        return {
+          ...state,
+          cover: action.payload,
+          coverUploadLoading: false,
+          coverUploadError: null,
+        };
+      case UPLOAD_COVER_FAILED:
+        return {
+          ...state,
+          cover: action.old,
+          coverUploadLoading: false,
+          coverUploadError: action.payload,
+        };
     case CREATE_WEBSITE_LOADING:
       return {
         ...state,
@@ -202,6 +234,30 @@ const website = (state = initialValue, action) => {
         websiteLoadingError: action.payload,
         website: null,
       };
+    case SET_IMAGE_FILES:
+      
+      const prevU = state.files;
+      const newU = action.payload
+      const newFileS = [...prevU,...newU]
+      return {
+        ...state,
+        files:newFileS
+      }
+    case SET_COVER:
+      return {
+        ...state,
+        cover: action.payload,
+      }
+    case CLEAR_COVER:
+      return {
+        ...state,
+        cover:null
+      }
+    case CLEAR_IMAGE_FILES:
+      return {
+        ...state,
+        files:[]
+      }
     default:
       return state;
   }

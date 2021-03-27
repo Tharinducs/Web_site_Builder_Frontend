@@ -4,8 +4,23 @@
     width: 100%;
 }
 
+.dropzone{
+  width : 100%;
+  height: 80px;
+  border : 2px dotted #a6a9b6 !important;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+  color: #a6a9b6;
+  display: flex;
+}
+
+.background{
+    padding-bottom: 5%;
+}
+
 .cardBody{
-    margin-top: 10%;
+    margin-top: 5%;
 }
 
 .formInput{
@@ -20,6 +35,7 @@
 
 .formInput:focus{
     border: none !important;
+    outline: none !important;
 }
 
 .formInputF{
@@ -43,6 +59,8 @@
     margin-top: 10px;
     text-align: center;
 }
+
+
 
 
 .lable{
