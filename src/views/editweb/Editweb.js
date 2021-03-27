@@ -8,13 +8,22 @@ import ToastView from "../../components/toast/Toast";
 import Loader from "../../components/loader/Loader";
 import { API_DOMAIN } from "../../_helpers/constant";
 import * as Yup from "yup";
-import { uploadImages,updateWebsite } from "../../store/actions/website";
+import {
+  uploadImages,
+  updateWebsite,
+  setImageData,
+  clearImageData,
+} from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
+import Map from "../../components/map/CreateMap";
+import Dropzone from "react-dropzone";
 
 const Editweb = (props) => {
   const [website, setWebSite] = useState(null);
   const [files, setFiles] = useState([]);
-  const [previousUploads,setpreviousUploads] = useState([])
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
+  const [previousUploads, setpreviousUploads] = useState([]);
   const [clicked, setClicked] = useState(null);
   const [userId, setUserId] = useState(null);
   const [type, setType] = useState(null);
@@ -30,80 +39,64 @@ const Editweb = (props) => {
     };
   }, []);
 
+  useEffect(()=>{
+    return ()=>{
+      props.clearImageData();
+    }
+  },[])
+
   useEffect(() => {
     if (props.website.updateWebsiteSuccess) {
-        setShowToast(true);
-        setTimeout(()=>{
-            props.history.push(`${process.env.PUBLIC_URL}/profile`);
-        },1000)
-      
+      setShowToast(true);
+      setTimeout(() => {
+        props.history.push(`${process.env.PUBLIC_URL}/profile`);
+      }, 1000);
     }
 
-    if(props.website.updateWebsiteError){
-        setShowErrorToaster(true);
+    if (props.website.updateWebsiteError) {
+      setShowErrorToaster(true);
     }
-  }, [props.website.updateWebsiteSuccess,props.website.updateWebsiteError, props.history]);
+  }, [
+    props.website.updateWebsiteSuccess,
+    props.website.updateWebsiteError,
+    props.history,
+  ]);
 
   useEffect(() => {
     const state = props.location.state;
-    if (state && state.websiteData && Object.keys(state.websiteData).length !== 0) {
+    if (
+      state &&
+      state.websiteData &&
+      Object.keys(state.websiteData).length !== 0
+    ) {
+      const address = JSON.parse(state.websiteData?.address);
+      props.clearImageData();
+      if (state.websiteData?.uploads) {
+        const images = JSON.parse(state.websiteData?.uploads);
+        props.setImageData(images);
+      }
+      setLat(address.lat || null);
+      setLng(address.lng || null);
       setWebSite(state.websiteData);
     } else {
       props.history.push(`${process.env.PUBLIC_URL}/profile`);
     }
   }, []);
 
-  useEffect(() => {
-    if (website?.uploads) {
-      const images = JSON.parse(website.uploads);
-      let imageData = images.map((item, index) => {
-        return `${API_DOMAIN}/api/uploads/${item}`;
-      });
-
-      setFiles(imageData);
-    }
-  }, [website]);
-
-  const handleChange = (e) => {
-    if (e?.target?.files) {
-      const ufiles = Array.from(e.target.files);
-      props.uploadImages(ufiles);
-      Promise.all(
-        ufiles.map((file) => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.addEventListener("load", (ev) => {
-              resolve(ev.target.result);
-            });
-            reader.addEventListener("error", reject);
-            reader.readAsDataURL(file);
-          });
-        })
-      ).then(
-        (images) => {
-          /* Once all promises are resolved, update state with image URI array */
-          //   const newFileSet = files.concat(images)
-          setFiles([...files, ...images]);
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
+  const handleChange = (uFiles) => {
+    if (uFiles) {
+      const nFiles = Array.from(uFiles);
+      props.uploadImages(nFiles,props.website.files);
     }
   };
 
   const handleSubmit = (values) => {
-    const prevUploads = JSON.parse(website?.uploads || "[]");
+    const prevUploads = (props.website.files || []).map((item, index) => {
+      return item.split("/").pop();
+    });
     let data = values;
     data.userId = website.userId;
-    if(props.website.files && props.website.files.length !==0 && prevUploads && prevUploads.length !==0){
-        data.uploads = JSON.stringify([...props.website.files,...prevUploads] || []);
-    }else if(props.website.files && props.website.files.length !==0 &&  prevUploads.length ===0){
-        data.uploads = JSON.stringify(props.website.files || []);
-    }else if(props.website.files.length ===0){
-        data.uploads = JSON.stringify(prevUploads || [])
-    }
-    
+    data.uploads = JSON.stringify(prevUploads);
     props.updateWebsite(data);
   };
   return (
@@ -129,7 +122,9 @@ const Editweb = (props) => {
         <div className={styles.cardBody}>
           <div className="row">
             <div className="col-lg-4"></div>
-            <div className="col-lg-4"><h3 style={{ textAlign: "center" }}>Edit Website</h3></div>
+            <div className="col-lg-4">
+              <h3 style={{ textAlign: "center" }}>Edit Website</h3>
+            </div>
             <div className="col-lg-4"></div>
           </div>
           <div className="row">
@@ -137,8 +132,8 @@ const Editweb = (props) => {
             <div className="col-lg-8">
               <Formik
                 initialValues={{
-                  id: ((website || {}).id || ""),
-                  type:((website || {}).type || ""),
+                  id: (website || {}).id || "",
+                  type: (website || {}).type || "",
                   cname: (website || {}).companyName || "",
                   about: (website || {}).about || "",
                   address: (website || {}).address || "",
@@ -151,9 +146,7 @@ const Editweb = (props) => {
                   cname: Yup.string().required(
                     "Company Name is required feild"
                   ),
-                  id: Yup.string().required(
-                    "Id is required feild"
-                  ),
+                  id: Yup.string().required("Id is required feild"),
                   about: Yup.string().required("About is required feild"),
                   address: Yup.string().required("Address is required feild"),
                   email: Yup.string()
@@ -172,7 +165,7 @@ const Editweb = (props) => {
               >
                 {(formprops) => (
                   <>
-                   <div className="row">
+                    <div className="row">
                       <div className="col-lg-3">
                         <p className={styles.lable}>Website Id</p>
                       </div>
@@ -222,8 +215,7 @@ const Editweb = (props) => {
                           onBlur={formprops.handleBlur("cname")}
                           className={styles.formInput}
                         />
-                        {formprops.errors.cname &&
-                        formprops.touched.cname  ? (
+                        {formprops.errors.cname && formprops.touched.cname ? (
                           <div className={styles.errorMessage}>
                             {formprops.errors.cname}
                           </div>
@@ -246,8 +238,7 @@ const Editweb = (props) => {
                           onBlur={formprops.handleBlur("about")}
                           className={styles.formInput}
                         ></textarea>
-                        {formprops.errors.about &&
-                        formprops.touched.about ? (
+                        {formprops.errors.about && formprops.touched.about ? (
                           <div className={styles.errorMessage}>
                             {formprops.errors.about}
                           </div>
@@ -262,10 +253,13 @@ const Editweb = (props) => {
                         {" "}
                         <textarea
                           id="address"
-                          placeholder="Enter Address...."
+                          placeholder="Select location on the map...."
                           rows="4"
                           cols="50"
-                          value={formprops.values.address}
+                          readOnly={true}
+                          value={ formprops.values.address !== ""
+                          ? JSON.parse(formprops.values.address).address
+                          : ""}
                           onChange={formprops.handleChange("address")}
                           onBlur={formprops.handleBlur("address")}
                           className={styles.formInput}
@@ -278,6 +272,12 @@ const Editweb = (props) => {
                         ) : null}
                       </div>
                     </div>
+                    
+                    <Map
+                      setValue={formprops.setFieldValue}
+                      lat={lat || null}
+                      lng={lng || null}
+                    />
                     <div className="row">
                       <div className="col-lg-3">
                         <p className={styles.lable}>Email</p>
@@ -292,8 +292,7 @@ const Editweb = (props) => {
                           onBlur={formprops.handleBlur("email")}
                           className={styles.formInput}
                         />
-                        {formprops.errors.email &&
-                        formprops.touched.email ? (
+                        {formprops.errors.email && formprops.touched.email ? (
                           <div className={styles.errorMessage}>
                             {formprops.errors.email}
                           </div>
@@ -327,42 +326,34 @@ const Editweb = (props) => {
                         <p className={styles.lable}>Photos</p>
                       </div>
                       <div className="col-lg-6">
-                        <input
-                          ref={(e) => (filesRef = e)}
-                          id="files"
-                          type="file"
-                          name=""
+                      <Dropzone
+                          className={styles.dropzone}
                           accept="image/gif,image/jpeg,image/jpg,image/png"
-                          title="Browse"
-                          onChange={(e) => handleChange(e)}
-                          multiple
-                          className={styles.formInputF}
-                        />
-                        <Button
-                          variant="outline-secondary"
-                          disabled={props.website.draftLoading}
-                          className={styles.button}
-                          onClick={() => {
-                            if (filesRef) {
-                              filesRef.click();
-                            }
-                          }}
+                          onDrop={(acceptedFiles) =>
+                            handleChange(acceptedFiles)
+                          }
                         >
-                          {props.website.fileUploadLoading ? (
-                            <Spinner
-                              as="span"
-                              animation="border"
-                              role="status"
-                              aria-hidden="true"
-                            />
-                          ) : (
-                            <>Browse</>
+                          {({ getRootProps, getInputProps }) => (
+                            <section className={styles.dropzone}>
+                              <div {...getRootProps({ className: "dropzone" })}>
+                                <input
+                                  {...getInputProps({
+                                    className: styles.formInput,
+                                  })}
+                                />
+                                <p>
+                                  Drag 'n' drop some files here, or click to
+                                  select files
+                                </p>
+                              </div>
+                            </section>
                           )}
-                        </Button>
-                        {files.length !== 0 &&
+                        </Dropzone>
+                        {props.website.files.length !== 0 &&
+                        props.website.files &&
                         !props.website.fileUploadLoading ? (
                           <div className="row">
-                            {files.map((item, index) => {
+                            {props.website.files.map((item, index) => {
                               return (
                                 <div className="col-lg-4" key={index}>
                                   <img
@@ -395,10 +386,11 @@ const Editweb = (props) => {
                           onClick={formprops.handleSubmit}
                           disabled={
                             Object.keys(formprops.errors).length !== 0 ||
-                            props.website.fileUploadLoading || props.website.updateWebsiteLoading
+                            props.website.fileUploadLoading ||
+                            props.website.updateWebsiteLoading
                           }
                         >
-                            {props.website.updateWebsiteLoading ? (
+                          {props.website.updateWebsiteLoading ? (
                             <Spinner
                               as="span"
                               animation="border"
@@ -408,7 +400,6 @@ const Editweb = (props) => {
                           ) : (
                             <> Update web site</>
                           )}
-                          
                         </Button>
                       </div>
                     </div>
@@ -430,4 +421,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { uploadImages,updateWebsite })(withRouter(Editweb));
+export default connect(mapStateToProps, {
+  uploadImages,
+  updateWebsite,
+  setImageData,
+  clearImageData,
+})(withRouter(Editweb));

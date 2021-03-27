@@ -35,13 +35,13 @@ const routes = [
         path: `${process.env.PUBLIC_URL}/category`,
         exact: true,
         layout: LoginLayout,
-        component: RequireAuth(CategoryView),
+        component: CategoryView,
     },
     {
         path: `${process.env.PUBLIC_URL}/create`,
         exact: true,
         layout: LoginLayout,
-        component: RequireAuth(CreateView),
+        component: CreateView,
     },
     {
         path: `${process.env.PUBLIC_URL}/edit`,
@@ -53,7 +53,7 @@ const routes = [
         path: `${process.env.PUBLIC_URL}/webpage`,
         exact: true,
         layout: LoginLayout,
-        component: RequireAuth(Webpage),
+        component: Webpage,
     },
     {
         path: `${process.env.PUBLIC_URL}/profile`,

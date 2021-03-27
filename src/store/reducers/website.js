@@ -22,6 +22,8 @@ import {
   UPDATE_WEBSITE_SUCCESS,
   UPDATE_WEBSITE_LOADING,
   CLEAR_UPDATE_DATA,
+  SET_IMAGE_FILES,
+  CLEAR_IMAGE_FILES,
 } from "../../_helpers/constant";
 
 const initialValue = {
@@ -74,6 +76,7 @@ const website = (state = initialValue, action) => {
         ...state,
         draftgetLoading: true,
         drft: null,
+        files:[],
         drftGetError: null,
       };
     case GET_DRFT_SUCCESS:
@@ -107,7 +110,7 @@ const website = (state = initialValue, action) => {
     case UPLOAD_FILE_FAILED:
       return {
         ...state,
-        files: [],
+        files: [...action.payload],
         fileUploadLoading: false,
         fileUploadError: action.payload,
       };
@@ -202,6 +205,20 @@ const website = (state = initialValue, action) => {
         websiteLoadingError: action.payload,
         website: null,
       };
+    case SET_IMAGE_FILES:
+      
+      const prevU = state.files;
+      const newU = action.payload
+      const newFileS = [...prevU,...newU]
+      return {
+        ...state,
+        files:newFileS
+      }
+    case CLEAR_IMAGE_FILES:
+      return {
+        ...state,
+        files:[]
+      }
     default:
       return state;
   }

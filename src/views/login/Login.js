@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Login.module.css";
 import { Formik, ErrorMessage } from "formik";
-import { Button,Spinner } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import * as Yup from "yup";
 import { connect } from "react-redux";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -19,13 +19,16 @@ const Login = (props) => {
       document.body.style = "background: #ffffff;";
     };
   }, []);
-
   useEffect(() => {
     //if logged in success. redirect
     if (props.signUpProps.loginSuccess) {
       setShowToast(true);
       setTimeout(() => {
-        props.history.push(`${process.env.PUBLIC_URL}/`);
+        if((props.location.state || {}).from === 'create'){
+          props.history.push(`${process.env.PUBLIC_URL}/create`,{from:'createAfterLogin'});
+        }else{
+          props.history.push(`${process.env.PUBLIC_URL}/`);
+        }
       }, 1000);
     }
     //if error occured stop loader
@@ -36,6 +39,7 @@ const Login = (props) => {
     props.signUpProps.loginSuccess,
     props.signUpProps.loginError,
     props.history,
+    props.location.state
   ]);
 
   const handleSubmit = (values) => {
@@ -149,7 +153,18 @@ const Login = (props) => {
           <div className="row mt-5">
             <div className="col-lg-4"></div>
             <div className="col-lg-4">
-              <h6 style={{ textAlign: "center" }}>Not a member yet ? <a href={`${process.env.PUBLIC_URL}/register`}>Register</a></h6>
+              <h6 style={{ textAlign: "center" }}>
+                Not a member yet ?{" "}
+                <div style={{textDecorationLine: 'underline',color:'#4a47a3'}}
+                  onClick={() => {
+                    props.history.push("register", {
+                      from: (props.location.state || {}).from || null,
+                    });
+                  }}
+                >
+                  Register
+                </div>
+              </h6>
             </div>
             <div className="col-lg-4"></div>
           </div>

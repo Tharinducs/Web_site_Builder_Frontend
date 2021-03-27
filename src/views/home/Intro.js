@@ -21,11 +21,7 @@ const Intro = ({history}) => {
               </div>
               <div className="row">
                 <Button variant="primary" onClick ={()=>{
-                  if(authenticated()){
                     history.push(`${process.env.PUBLIC_URL}/category`)
-                  }else{
-                    history.push(`${process.env.PUBLIC_URL}/login`)
-                  }
                 }}>Create Yours </Button>
               </div>
             </div>

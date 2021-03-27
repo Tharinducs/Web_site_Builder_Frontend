@@ -9,7 +9,7 @@ import {
 
 
 //contact us section
-const ContactUs = ({ website }) => {
+const ContactUs = ({ website,from }) => {
   return (
     <div className={styles.aboutBack} id="contact">
       <div className="container">
@@ -39,7 +39,7 @@ const ContactUs = ({ website }) => {
               </div>
             </div>
             <div className={`${styles.textContainer} pb-3`}>
-              {website.address}
+              {JSON.parse(website.address).address}
             </div>
           </div>
           <div className="col-lg-4">
@@ -69,7 +69,7 @@ const ContactUs = ({ website }) => {
               </div>
             </div>
             <div className={`${styles.textContainer} pb-3`}>
-              {website.mobile}
+              {from === 'create' ? website.pnumber :  website.mobile}
             </div>
           </div>
         </div>

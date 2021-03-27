@@ -1,5 +1,6 @@
 import {
   API_URL,
+  API_DOMAIN,
   CREATE_WEBSITE_FAILED,
   CREATE_WEBSITE_SUCCESS,
   CREATE_WEBSITE_LOADING,
@@ -21,7 +22,9 @@ import {
   UPDATE_WEBSITE_FAILED,
   UPDATE_WEBSITE_SUCCESS,
   UPDATE_WEBSITE_LOADING,
-  CLEAR_UPDATE_DATA
+  CLEAR_UPDATE_DATA,
+  SET_IMAGE_FILES,
+  CLEAR_IMAGE_FILES,
 } from "../../_helpers/constant";
 
 import axios from "axios";
@@ -81,7 +84,7 @@ export const createDraft = (value) => (dispatch) => {
     const getDraftFailed = (dispatch, error) =>
       dispatch({ type: GET_DRFT_FAILED, payload:error });
 
-export const uploadImages = (files) =>{
+export const uploadImages = (files,old) =>{
   var formData = new FormData();
   files.map((item,index) =>{
     formData.append('uploadedImages',item);
@@ -94,16 +97,20 @@ export const uploadImages = (files) =>{
         "Content-Type": "multipart/form-data",
       }})
       .then((data) => {
-        uploadImageSuccess(dispatch, data.data.files);
+        const imageData = data.data.files.map((item, index) => {
+          return `${API_DOMAIN}/api/uploads/${item}`;
+        });
+        const allImages = [...imageData,...old];
+        uploadImageSuccess(dispatch, allImages);
       })
       .catch((error) => {
         if (error.request && error.request.response) {
           uploadImageError(
             dispatch,
-            error.response.data.msg || "In File upload Something went wrong!"
+            error.response.data.msg || "In File upload Something went wrong!",old
           );
         } else {
-          uploadImageError(dispatch, "In File upload Something went wrong!");
+          uploadImageError(dispatch, "In File upload Something went wrong!",old);
         }
       });
   }
@@ -112,7 +119,7 @@ export const uploadImages = (files) =>{
 
 const uploadImageLoadding = (dispatch) =>dispatch({type: UPLOAD_FILE_LOADING});
 const uploadImageSuccess = (dispatch,data) =>dispatch({type: UPLOAD_FILE_SUCCESS, payload:data});
-const uploadImageError = (dispatch,error) => dispatch({type: UPLOAD_FILE_FAILED,payload:error})
+const uploadImageError = (dispatch,error,old) => dispatch({type: UPLOAD_FILE_FAILED,payload:error,old:old})
 
 
 export const createWebsite = (value) => (dispatch) => {
@@ -232,5 +239,19 @@ const createWebsiteFailed = (dispatch, error) =>
   }
 
   const clearUpdatewebsiteData = (dispatch) => dispatch({type: CLEAR_UPDATE_DATA});
-    
+
+  export const setImageData = (images) => dispatch =>{
+    const imageData = images.map((item, index) => {
+      return `${API_DOMAIN}/api/uploads/${item}`;
+    });
+    setImageFiles(dispatch,imageData);
+  }
+
+  export const clearImageData = () =>dispatch =>{
+    clearImageFiles(dispatch);
+  }
+
+
+  const setImageFiles = (dispatch,images) => dispatch({type: SET_IMAGE_FILES,payload:images});
+  const clearImageFiles = (dispatch) =>dispatch({type: CLEAR_IMAGE_FILES});
   
