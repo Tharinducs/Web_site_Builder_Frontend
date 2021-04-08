@@ -1,4 +1,4 @@
-export var API_DOMAIN ='http://localhost:8080'
+export var API_DOMAIN ='http://localhost:3011'
 export var API_URL = ``
 
 //login action names
