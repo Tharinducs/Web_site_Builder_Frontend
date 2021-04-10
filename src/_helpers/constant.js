@@ -1,5 +1,6 @@
 export var API_DOMAIN ='http://localhost:3011'
 export var API_URL = ``
+export const GOOGLE_API_KEY = "YOUR API KEY"
 
 //login action names
 export const LOGIN_LOADING = "LOGIN_LOADING"
