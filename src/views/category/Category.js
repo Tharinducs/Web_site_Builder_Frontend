@@ -51,6 +51,7 @@ const Category = (props) => {
                       disabled={type === ""}
                       onClick={()=>{
                           localStorage.setItem("type",type)
+                          localStorage.removeItem("formData");
                           setTimeout(() => {
                             props.history.push(`${process.env.PUBLIC_URL}/create`);
                           }, 1000);
