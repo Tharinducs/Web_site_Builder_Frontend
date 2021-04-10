@@ -8,6 +8,7 @@ import {
   useMapEvent,
   useMap,
 } from "react-leaflet";
+import {GOOGLE_API_KEY} from '../../_helpers/constant'
 import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
@@ -43,18 +44,30 @@ const SimpleExample = (props) => {
     setLat(e.latlng.lat);
     setLng(e.latlng.lng);
     fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latlng.lat},${e.latlng.lng}&key=AIzaSyC1MavIZFOJI3wvePF447XqsBwCdi5Hnp0`
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${e.latlng.lat},${e.latlng.lng}&key=${GOOGLE_API_KEY}`
     )
       .then((response) => response.json())
-      .then((data) => console.log(data, "data"));
-    props.setValue(
-      "address",
-      JSON.stringify({
-        lat: e.latlng.lat,
-        lng: e.latlng.lng,
-        address: "182,palanwatta,pannipitiya",
-      })
-    );
+      .then((data) => {
+        if(data?.results && data.results.length !==0){
+        props.setValue(
+          "address",
+          JSON.stringify({
+            lat: e.latlng.lat,
+            lng: e.latlng.lng,
+            address: data.results[0] && data.results[0].formatted_address,
+          })
+        );
+      }else{
+        props.setValue(
+          "address",
+          JSON.stringify({
+            lat: e.latlng.lat,
+            lng: e.latlng.lng,
+            address: "Joenvarrentie 38, 79600 Joroinen, Finland",
+          })
+        );
+      }});
+    
   };
 
   return (
