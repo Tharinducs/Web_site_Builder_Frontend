@@ -27,6 +27,12 @@ const MyComponent = ({ changeP }) => {
   return null;
 };
 
+function ChangeView({ center, zoom }) {
+  const map = useMap();
+  map.setView(center, zoom);
+  return null;
+}
+
 const SimpleExample = (props) => {
   const [lat, setLat] = useState(62.1339172);
   const [lng, setLng] = useState(25.0954868);
@@ -52,9 +58,12 @@ const SimpleExample = (props) => {
         props.setValue(
           "address",
           JSON.stringify({
-            lat: e.latlng.lat,
-            lng: e.latlng.lng,
+            value:data.results[0] && data.results[0].formatted_address,
             address: data.results[0] && data.results[0].formatted_address,
+            coordinates:{
+              lat: e.latlng.lat,
+              lng: e.latlng.lng,
+            }
           })
         );
       }else{
@@ -72,6 +81,7 @@ const SimpleExample = (props) => {
 
   return (
     <MapContainer center={position} zoom={zoom} scrollWheelZoom={false}>
+      <ChangeView center={position} zoom={zoom} /> 
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"

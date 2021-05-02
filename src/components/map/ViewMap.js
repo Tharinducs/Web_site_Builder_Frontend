@@ -32,6 +32,7 @@ const SimpleExample = (props) => {
   const [zoom, setZoom] = useState(6);
   const position = [lat, lng];
 
+
   useEffect(() => {
     if (props?.lat && props?.lng) {
       setLat(props.lat);
@@ -39,10 +40,16 @@ const SimpleExample = (props) => {
     }
   }, [props?.lat, props?.lng]);
 
+function ChangeView({ center, zoom }) {
+  const map = useMap();
+  map.setView(center, zoom);
+  return null;
+}
 
 
   return (
     <MapContainer center={position} zoom={zoom} scrollWheelZoom={false} >
+      <ChangeView center={position} zoom={zoom} /> 
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"

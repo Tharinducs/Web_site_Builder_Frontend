@@ -20,6 +20,7 @@ import {
 import { withRouter } from "react-router-dom";
 import Map from "../../components/map/CreateMap";
 import Dropzone from "react-dropzone";
+import PlacesAutoComplete from "../../components/placesautoComplete"
 
 const Editweb = (props) => {
   const [website, setWebSite] = useState(null);
@@ -263,20 +264,7 @@ const Editweb = (props) => {
                         <p className={styles.lable}>Address</p>
                       </div>
                       <div className="col-lg-8">
-                        {" "}
-                        <textarea
-                          id="address"
-                          placeholder="Select location on the map...."
-                          rows="4"
-                          cols="50"
-                          readOnly={true}
-                          value={ formprops.values.address !== ""
-                          ? JSON.parse(formprops.values.address).address
-                          : ""}
-                          onChange={formprops.handleChange("address")}
-                          onBlur={formprops.handleBlur("address")}
-                          className={styles.formInput}
-                        ></textarea>
+                      <PlacesAutoComplete name="address" value={formprops.values.address !== "" ? JSON.parse(formprops.values.address) : undefined} setFieldValue={formprops.setFieldValue} setLat={setLat} setLng={setLng} />
                         {formprops.errors.address &&
                         formprops.touched.address ? (
                           <div className={styles.errorMessage}>
