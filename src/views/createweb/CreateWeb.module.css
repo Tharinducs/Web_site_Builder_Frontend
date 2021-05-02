@@ -38,6 +38,30 @@
     outline: none !important;
 }
 
+
+.formInputL{
+    width: 100% !important;
+    border: none !important;
+    height: 40px;
+    padding-left: 4%;
+    border-radius: 5px;
+    margin-top: 5%;
+    margin-bottom: 1%;
+}
+
+.formInputL:focus{
+    border: none !important;
+    outline: none !important;
+}
+
+.dropdownCon{
+    padding-left: 1% !important;
+    padding-right: 1% !important;
+    padding-bottom: 1% !important;
+    padding-top: 1% !important;
+    margin-bottom: 1% !important;
+}
+
 .formInputF{
     display: none;
 }

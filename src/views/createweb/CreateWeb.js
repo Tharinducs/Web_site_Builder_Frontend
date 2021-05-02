@@ -1,3 +1,4 @@
+/* global google */
 import React, { useEffect, useState } from "react";
 import styles from "./CreateWeb.module.css";
 import { Formik, ErrorMessage } from "formik";
@@ -22,7 +23,9 @@ import {
 import { withRouter } from "react-router-dom";
 import Map from "../../components/map/CreateMap";
 import Dropzone from "react-dropzone";
+import PlacesAutoComplete from "../../components/placesautoComplete"
 import { API_DOMAIN } from "../../_helpers/constant";
+import googleMapReact from "google-map-react";
 
 const CreateWeb = (props) => {
   const [files, setFiles] = useState([]);
@@ -43,6 +46,7 @@ const CreateWeb = (props) => {
   } = props;
 
   let filesRef;
+
   useEffect(() => {
     document.body.style = "background: #bee8fa;";
 
@@ -51,12 +55,14 @@ const CreateWeb = (props) => {
     };
   }, []);
 
+
+
   useEffect(() => {
     if (drft?.uploads) {
       const images = JSON.parse(drft.uploads);
       props.setImageData(images);
     }
-    if(drft?.cover){
+    if (drft?.cover) {
       props.setCoverData(drft?.cover)
     }
     if (drft?.address) {
@@ -90,12 +96,18 @@ const CreateWeb = (props) => {
     getDraftData();
   }, []);
 
-  useEffect(()=>{
-    return ()=>{
+  useEffect(() => {
+    return () => {
       props.clearImageData();
       props.clearCoverData();
     }
-  },[])
+  }, [])
+
+
+
+
+
+
   const getDraftData = async () => {
     if (props.location?.state?.from === "createAfterLogin") {
       const userId = (JSON.parse(localStorage.getItem("loginToken")) || {}).user
@@ -112,7 +124,7 @@ const CreateWeb = (props) => {
           const images = JSON.parse(userData.uploads);
           props.setImageData(images);
         }
-        if(userData?.cover){
+        if (userData?.cover) {
           props.setCoverData(userData?.cover)
         }
         if (userData?.address) {
@@ -147,7 +159,7 @@ const CreateWeb = (props) => {
             setLat(address.lat || null);
             setLng(address.lng || null);
           }
-          if(userData?.cover){
+          if (userData?.cover) {
             props.setCoverData(userData?.cover)
           }
           setTemporyDraft(userData);
@@ -160,13 +172,13 @@ const CreateWeb = (props) => {
   const handleChange = (uFiles) => {
     if (uFiles) {
       const nFiles = Array.from(uFiles);
-      props.uploadImages(nFiles,props.website.files);
+      props.uploadImages(nFiles, props.website.files);
     }
   };
 
-  const handleCover = (uFiles) =>{
+  const handleCover = (uFiles) => {
     const nFiles = Array.from(uFiles);
-    props.uploadCover(nFiles,props.website.cover);
+    props.uploadCover(nFiles, props.website.cover);
   }
 
   const handleSubmit = (values) => {
@@ -300,22 +312,7 @@ const CreateWeb = (props) => {
                         <p className={styles.lable}>Address</p>
                       </div>
                       <div className="col-lg-8">
-                        {" "}
-                        <textarea
-                          id="address"
-                          placeholder="Select location on the map...."
-                          rows="4"
-                          cols="50"
-                          readOnly={true}
-                          value={
-                            formprops.values.address !== ""
-                              ? JSON.parse(formprops.values.address).address
-                              : ""
-                          }
-                          onChange={formprops.handleChange("address")}
-                          onBlur={formprops.handleBlur("address")}
-                          className={styles.formInput}
-                        ></textarea>
+                        <PlacesAutoComplete name="address" value={formprops.values.address !== "" ? JSON.parse(formprops.values.address) : undefined} setFieldValue={formprops.setFieldValue} setLat={setLat} setLng={setLng} />
                       </div>
                     </div>
                     <Map
@@ -343,8 +340,8 @@ const CreateWeb = (props) => {
                           className={styles.formInput}
                         />
                         {formprops.errors.email &&
-                        formprops.touched.email &&
-                        formprops.values.email ? (
+                          formprops.touched.email &&
+                          formprops.values.email ? (
                           <div className={styles.errorMessage}>
                             {formprops.errors.email}
                           </div>
@@ -402,7 +399,7 @@ const CreateWeb = (props) => {
                         </Dropzone>
 
                         {props.website.files.length !== 0 &&
-                        props.website.files ? (
+                          props.website.files ? (
                           <div className="row">
                             {props.website.files.map((item, index) => {
                               return (
@@ -456,15 +453,15 @@ const CreateWeb = (props) => {
                           )}
                         </Dropzone>
 
-                        {props.website.cover  ? (
+                        {props.website.cover ? (
                           <div className="row">
-                                <div className="col-lg-12">
-                                  <img
-                                    src={props.website.cover}
-                                    alt="uploded"
-                                    className={`img-thumbnail my-3 ${styles.image}`}
-                                  />
-                                </div>
+                            <div className="col-lg-12">
+                              <img
+                                src={props.website.cover}
+                                alt="uploded"
+                                className={`img-thumbnail my-3 ${styles.image}`}
+                              />
+                            </div>
                           </div>
                         ) : null}
                         {props.website.coverUploadError ? (
@@ -511,14 +508,14 @@ const CreateWeb = (props) => {
                                 data.userId = userId;
                                 data.type = type;
                                 data.uploads = JSON.stringify(prevUploads);
-                                data.cover =props.website.cover ? props.website.cover.split("/").pop() : null;
+                                data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
                                 props.createDraft(data);
                                 setClicked("pnumber");
                               }
                             }}
                           >
                             {props.website.draftLoading &&
-                            clicked === "pnumber" ? (
+                              clicked === "pnumber" ? (
                               <Spinner
                                 as="span"
                                 size="sm"

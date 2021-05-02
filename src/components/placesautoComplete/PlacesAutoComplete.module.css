@@ -1,0 +1,15 @@
+.formInputL{
+    width: 100% !important;
+    border: none !important;
+    margin-top: 2% !important;
+    /* height: 40px;
+    padding-left: 4%;
+    border-radius: 5px;
+    margin-top: 5%;
+    margin-bottom: 1%; */
+}
+
+.formInputL:focus{
+    border: none !important;
+    outline: none !important;
+}
