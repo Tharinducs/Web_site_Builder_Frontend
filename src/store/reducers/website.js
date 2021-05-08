@@ -28,6 +28,12 @@ import {
   SET_IMAGE_FILES,
   CLEAR_IMAGE_FILES,
   SET_COVER,
+  CACHE_IMPORT_FAILED,
+  CACHE_IMPORT_LOADING,
+  CACHE_IMPORT_SUCCESS,
+  CACHE_SITE_CREATE_FAILED,
+  CACHE_SITE_CREATE_LOADING,
+  CACHE_SITE_CREATE_SUCCESS,
   CLEAR_COVER,
 } from "../../_helpers/constant";
 
@@ -54,6 +60,11 @@ const initialValue = {
   websiteLoadingError: null,
   websites: [],
   website: null,
+  cachesSiteData: null,
+  cacheImportLoading: false,
+  cacheImportError: null,
+  cacheSiteCreationError: null,
+  cacheSiteCreationLoading: false,
 };
 
 const website = (state = initialValue, action) => {
@@ -84,7 +95,7 @@ const website = (state = initialValue, action) => {
         ...state,
         draftgetLoading: true,
         drft: null,
-        files:[],
+        files: [],
         drftGetError: null,
       };
     case GET_DRFT_SUCCESS:
@@ -122,27 +133,27 @@ const website = (state = initialValue, action) => {
         fileUploadLoading: false,
         fileUploadError: action.payload,
       };
-      case UPLOAD_COVER_LOADING:
-        return {
-          ...state,
-          cover: null,
-          coverUploadLoading: true,
-          coverUploadError: null,
-        };
-      case UPLOAD_COVER_SUCCESS:
-        return {
-          ...state,
-          cover: action.payload,
-          coverUploadLoading: false,
-          coverUploadError: null,
-        };
-      case UPLOAD_COVER_FAILED:
-        return {
-          ...state,
-          cover: action.old,
-          coverUploadLoading: false,
-          coverUploadError: action.payload,
-        };
+    case UPLOAD_COVER_LOADING:
+      return {
+        ...state,
+        cover: null,
+        coverUploadLoading: true,
+        coverUploadError: null,
+      };
+    case UPLOAD_COVER_SUCCESS:
+      return {
+        ...state,
+        cover: action.payload,
+        coverUploadLoading: false,
+        coverUploadError: null,
+      };
+    case UPLOAD_COVER_FAILED:
+      return {
+        ...state,
+        cover: action.old,
+        coverUploadLoading: false,
+        coverUploadError: action.payload,
+      };
     case CREATE_WEBSITE_LOADING:
       return {
         ...state,
@@ -235,13 +246,55 @@ const website = (state = initialValue, action) => {
         website: null,
       };
     case SET_IMAGE_FILES:
-      
+
       const prevU = state.files;
       const newU = action.payload
-      const newFileS = [...prevU,...newU]
+      const newFileS = [...prevU, ...newU]
       return {
         ...state,
-        files:newFileS
+        files: newFileS
+      }
+    case CACHE_IMPORT_LOADING:
+      return {
+        ...state,
+        cachesSiteData: null,
+        cacheImportLoading: true,
+        cacheImportError: null,
+      }
+    case CACHE_IMPORT_SUCCESS:
+      return {
+        ...state,
+        cachesSiteData: action.payload,
+        cacheImportLoading: false,
+        cacheImportError: null,
+      }
+    case CACHE_IMPORT_FAILED:
+      return {
+        ...state,
+        cachesSiteData: null,
+        cacheImportLoading: false,
+        cacheImportError: action.payload,
+      }
+    case CACHE_SITE_CREATE_LOADING:
+      return {
+        ...state,
+        cacheSiteCreationError: null,
+        cacheSiteCreationLoading: true,
+      }
+    case CACHE_SITE_CREATE_SUCCESS:
+      let allWebsites = state.websites
+      allWebsites.push(action.payload)
+      return {
+        ...state,
+        websites:allWebsites,
+        cacheSiteCreationError: null,
+        cacheSiteCreationLoading: false,
+      }
+    case CACHE_SITE_CREATE_FAILED:
+      return {
+        ...state,
+        cacheSiteCreationError: action.payload,
+        cacheSiteCreationLoading: false,
       }
     case SET_COVER:
       return {
@@ -251,12 +304,12 @@ const website = (state = initialValue, action) => {
     case CLEAR_COVER:
       return {
         ...state,
-        cover:null
+        cover: null
       }
     case CLEAR_IMAGE_FILES:
       return {
         ...state,
-        files:[]
+        files: []
       }
     default:
       return state;

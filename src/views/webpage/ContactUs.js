@@ -14,7 +14,6 @@ const ContactUs = ({ website,from }) => {
   const [lat,setLat] = useState(null);
   const [lng,setLng] = useState(null);
   useEffect(()=>{
-    console.log(website.address,"website.address")
     if(website.address && website.address !== ""){
       setLng(JSON.parse(website.address).coordinates.lng)
       setLat(JSON.parse(website.address).coordinates.lat)
