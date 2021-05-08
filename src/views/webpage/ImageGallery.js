@@ -17,7 +17,7 @@ const ImageGallery = ({ website }) => {
         <div className="col-lg-4"></div>
       </div>
       <div className="row mt-4 pb-5">
-        {images.map((item,index)=>{
+        {images?.map((item,index)=>{
           return (<div className="col-lg-4 mb-3" key={index}>
           <img
             src={`${API_DOMAIN}/api/uploads/${item}`}
