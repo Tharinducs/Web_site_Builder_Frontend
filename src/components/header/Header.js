@@ -15,7 +15,7 @@ import { withRouter } from "react-router-dom";
 import Scroll from "react-scroll";
 const ScrollLink = Scroll.ScrollLink;
 
-const Header = () => {
+const Header = (props) => {
   return (
     <Navbar bg="light" expand="lg" className={styles.navBar} fixed="top">
       {/* <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand> */}
@@ -53,7 +53,7 @@ const Header = () => {
           </Nav.Link>
           {!authenticated() && (
             <Nav.Link
-              href={`${process.env.PUBLIC_URL}/register`}
+              onClick={()=>props.history.push(`${process.env.PUBLIC_URL}/register`)}
               className={styles.navItem}
             >
               {" "}
@@ -62,7 +62,7 @@ const Header = () => {
           )}
           {!authenticated() && (
             <Nav.Link
-              href={`${process.env.PUBLIC_URL}/login`}
+             onClick={()=>props.history.push(`${process.env.PUBLIC_URL}/login`)}
               className={styles.navItem}
             >
               {" "}
@@ -72,7 +72,7 @@ const Header = () => {
           {authenticated() && (
             <Nav.Link
               className={styles.navItem}
-              href={`${process.env.PUBLIC_URL}/profile`}
+              onClick={()=>props.history.push(`${process.env.PUBLIC_URL}/profile`)}
             >
               {" "}
               <FontAwesomeIcon icon={faUserAlt} /> Profile
@@ -85,6 +85,7 @@ const Header = () => {
               href={`${process.env.PUBLIC_URL}/`}
               onClick={() => {
                 localStorage.removeItem("loginToken");
+                props.history.push(`${process.env.PUBLIC_URL}/`)
               }}
             >
               {" "}
