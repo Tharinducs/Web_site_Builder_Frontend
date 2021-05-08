@@ -22,20 +22,16 @@ const Webpage = (props) => {
 
   //access the website data from url state data
   useEffect(() => {
-    console.log("Inside use effect")
     const state = props.location.state;
-    console.log({state})
     if(state && !props.location.state.from){
       props.history.push(`${process.env.PUBLIC_URL}/`);
     }
     if(props.location?.state?.from === 'create'){
        getLocalStorageData()
     }else{
-      console.log("HIIIIii I am hre inside above else")
       if(!authenticated()){
         props.history.push(`${process.env.PUBLIC_URL}/`);
       }else{
-        console.log("HIIIIii I am hre inside else")
         if (
           state &&
           state.websiteData &&
@@ -54,8 +50,7 @@ const Webpage = (props) => {
     const data = JSON.parse(localStorage.getItem('formData'))
      setWebSite(data)
   }
-  console.log(props.location,"lo")
-  console.log({website});
+  
 
   return (
     <>

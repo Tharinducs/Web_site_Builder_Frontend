@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, Modal } from "react-bootstrap";
 import styles from "./Profile.module.css";
 import profile from "../../assets/img/profile.jpg";
 import { connect } from "react-redux";
@@ -11,12 +11,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ToastView from "../../components/toast/Toast";
 import Loader from "../../components/loader/Loader";
-import { getWebsites,clearUpdateData } from "../../store/actions/website";
+import { getWebsites, clearUpdateData,getCache,createCache } from "../../store/actions/website";
 import { withRouter } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Profile = (props) => {
   const [showToast, setShowToast] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [mobileNo, setMobileNo] = useState("");
+  const [mobileNoErr, setMobileNoErr] = useState(null);
   const [showErrorToaster, setShowErrorToaster] = useState(false);
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -33,19 +36,61 @@ const Profile = (props) => {
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && user.user_id) {
       props.getWebsites(user.user_id);
     }
   }, [user]);
+
+  useEffect(()=>{
+    if(props.website.cachesSiteData){
+      setShowModal(false);
+      setShowToast(true);
+      let cacheData =props.website.cachesSiteData;
+      cacheData?.map((item,index)=>{
+        let dataItem = {
+          type:'Resturant',
+          cname: item.Title,
+          about: item.description,
+          address: JSON.stringify({value:item.Address,address:item.Address,coordinates:{lat:item.Latitude,lng:item.Longitude}}),
+          email: "mysite@example.com",
+          pnumber:item.Phone,
+          userId:user.user_id
+        }
+
+        props.createCache(dataItem)
+      }) 
+    }
+  },[props.website.cachesSiteData])
 
   const getUserData = async () => {
     const user = JSON.parse(await localStorage.getItem("loginToken")).user;
 
     setUser(user);
   };
+
+  const handleClose = () => setShowModal(false);
+  const handleShow = () => setShowModal(true);
+
+  const handleSubmit = () => {
+    if (!mobileNo) {
+      setMobileNoErr(true);
+    } else {
+      setMobileNoErr(false);
+      props.getCache(mobileNo)
+    }
+  }
+
   return (
     <>
-    {props.website.websiteLoading && <Loader />}
+      {props.website.websiteLoading && <Loader />}
+      <ToastView
+        icon={faCheck}
+        setShow={(showStatus) => setShowToast(showStatus)}
+        show={showToast}
+        text="Successfully Imported!.Your sites will be creted in Few Seconds. "
+        color="#adf4ce"
+        backgroundColor="#00823e"
+      />
       <ToastView
         icon={faTimes}
         setShow={(showStatus) => setShowErrorToaster(showStatus)}
@@ -71,13 +116,21 @@ const Profile = (props) => {
                   className="mb-3"
                   style={{ marginLeft: -20 }}
                   variant="dark"
-                  onClick={()=>{
+                  onClick={() => {
                     props.history.push(
                       `${process.env.PUBLIC_URL}/changepassword`
                     );
                   }}
                 >
                   Change Password
+                </Button>
+                <Button
+                  className="mb-3"
+                  style={{ marginLeft: -20 }}
+                  variant="dark"
+                  onClick={handleShow}
+                >
+                  Import Previous websites
                 </Button>
               </div>
             </div>
@@ -114,18 +167,18 @@ const Profile = (props) => {
                     <td>
                       {" "}
                       <FontAwesomeIcon icon={faPencilAlt} onClick={() => {
-                          props.history.push(
-                            `${process.env.PUBLIC_URL}/edit`,
-                            { websiteData: item }
-                          );
-                        }}/>
+                        props.history.push(
+                          `${process.env.PUBLIC_URL}/edit`,
+                          { websiteData: item }
+                        );
+                      }} />
                       <FontAwesomeIcon
                         icon={faEye}
                         className="ml-2"
                         onClick={() => {
                           props.history.push(
                             `${process.env.PUBLIC_URL}/webpage`,
-                            { websiteData: item,from:'profile' }
+                            { websiteData: item, from: 'profile' }
                           );
                         }}
                       />
@@ -136,6 +189,30 @@ const Profile = (props) => {
             </tbody>
           </Table>
         </div>
+        <Modal show={showModal} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Import your sites</Modal.Title>
+          </Modal.Header>
+          <Modal.Body><input
+            type="text"
+            placeholder="Enter Mobile Number"
+            value={mobileNo}
+            onChange={(event) => setMobileNo(event.target.value)}
+            className={styles.formInput}
+          />
+            {mobileNoErr && <div className={styles.errorMessage}>
+              Mobile No is Required!
+                        </div>}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={()=>{handleClose();setMobileNoErr(null);setMobileNo("")}}>
+              Close
+          </Button>
+            <Button variant="success" onClick={handleSubmit}>
+              Import
+          </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </>
   );
@@ -147,4 +224,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, { getWebsites,clearUpdateData })(withRouter(Profile));
+export default connect(mapStateToProps, { getWebsites, clearUpdateData,getCache,createCache })(withRouter(Profile));

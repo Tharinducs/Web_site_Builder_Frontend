@@ -202,17 +202,13 @@ const Editweb = (props) => {
                         <p className={styles.lable}>Category</p>
                       </div>
                       <div className="col-lg-8">
-                        {" "}
-                        <input
-                          type="text"
-                          placeholder="Company Name"
-                          value={formprops.values.type}
-                          readOnly={true}
-                          disabled={true}
-                          onChange={formprops.handleChange("type")}
-                          onBlur={formprops.handleBlur("type")}
-                          className={styles.formInput}
-                        />
+                      <select placeholder="Company Name" name="type" id="type" value={formprops.values.type} className={styles.formInput} onChange={formprops.handleChange("type")}>
+                        <option value="">-</option>
+                        <option value="Resturant">Resturant</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Online Store">Online Store</option>
+                        <option value="Travel">Travel</option>
+                      </select>
                       </div>
                     </div>
                     <div className="row">
