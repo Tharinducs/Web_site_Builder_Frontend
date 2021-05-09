@@ -104,13 +104,11 @@ const Editweb = (props) => {
   }
 
   const handleSubmit = (values) => {
-    const prevUploads = (props.website.files || []).map((item, index) => {
-      return item.split("/").pop();
-    });
+    const prevUploads = (props.website.files || [])
     let data = values;
     data.userId = website.userId;
     data.uploads = JSON.stringify(prevUploads);
-    data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
+    data.cover = props.website.cover ? props.website.cover : null;
     props.updateWebsite(data);
   };
   return (

@@ -351,7 +351,7 @@ const clearUpdatewebsiteData = (dispatch) => dispatch({ type: CLEAR_UPDATE_DATA 
 
 export const setImageData = (images) => dispatch => {
   const imageData = images.map((item, index) => {
-    return `${API_DOMAIN}/api/uploads/${item}`;
+    return `${item}`;
   });
   setImageFiles(dispatch, imageData);
 }
@@ -367,7 +367,7 @@ const clearImageFiles = (dispatch) => dispatch({ type: CLEAR_IMAGE_FILES });
 
 
 export const setCoverData = (image) => dispatch => {
-  const imageData = `${API_DOMAIN}/api/uploads/${image}`
+  const imageData = `${image}`
   setCoverFiles(dispatch, imageData);
 }
 

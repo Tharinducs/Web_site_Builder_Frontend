@@ -182,14 +182,14 @@ const CreateWeb = (props) => {
   }
 
   const handleSubmit = (values) => {
-    const prevUploads = (props.website.files || []).map((item, index) => {
-      return item.split("/").pop();
-    });
+    const prevUploads = (props.website.files || [])
+    console.log({prevUploads})
     let data = values;
     data.userId = userId;
     data.type = type;
     data.uploads = JSON.stringify(prevUploads);
-    data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
+    // console.log({ data });
+    data.cover = props.website.cover ? props.website.cover : null;
     props.createWebsite(data);
   };
 
@@ -402,6 +402,7 @@ const CreateWeb = (props) => {
                           props.website.files ? (
                           <div className="row">
                             {props.website.files.map((item, index) => {
+                              console.log(item, "item")
                               return (
                                 <div className="col-lg-4" key={index}>
                                   <img
@@ -486,13 +487,11 @@ const CreateWeb = (props) => {
                               ) {
                                 const prevUploads = (
                                   props.website.files || []
-                                ).map((item, index) => {
-                                  return item.split("/").pop();
-                                });
+                                )
                                 let data = formprops.values;
                                 data.userId = userId;
                                 data.uploads = JSON.stringify(prevUploads);
-                                data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
+                                data.cover = props.website.cover ? props.website.cover : null;
                                 setClicked("pnumber");
                                 localStorage.setItem(
                                   "formData",
@@ -501,14 +500,12 @@ const CreateWeb = (props) => {
                               } else {
                                 const prevUploads = (
                                   props.website.files || []
-                                ).map((item, index) => {
-                                  return item.split("/").pop();
-                                });
+                                )
                                 let data = formprops.values;
                                 data.userId = userId;
                                 data.type = type;
                                 data.uploads = JSON.stringify(prevUploads);
-                                data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
+                                data.cover = props.website.cover ? props.website.cover : null;
                                 props.createDraft(data);
                                 setClicked("pnumber");
                               }
@@ -537,14 +534,12 @@ const CreateWeb = (props) => {
                             onClick={() => {
                               const prevUploads = (
                                 props.website.files || []
-                              ).map((item, index) => {
-                                return item.split("/").pop();
-                              });
+                              )
                               var data = formprops.values;
                               data.userId = userId;
                               data.type = type;
                               data.uploads = JSON.stringify(prevUploads);
-                              data.cover = props.website.cover ? props.website.cover.split("/").pop() : null;
+                              data.cover = props.website.cover ? props.website.cover : null;
                               setClicked("pnumber");
                               localStorage.setItem(
                                 "formData",

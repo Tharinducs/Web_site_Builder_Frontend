@@ -20,7 +20,7 @@ const ImageGallery = ({ website }) => {
         {images?.map((item,index)=>{
           return (<div className="col-lg-4 mb-3" key={index}>
           <img
-            src={`${API_DOMAIN}/api/uploads/${item}`}
+            src={`${item}`}
             alt="gimage"
             className={styles.gImage}
           />
