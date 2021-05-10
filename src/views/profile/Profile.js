@@ -55,8 +55,10 @@ const Profile = (props) => {
           email: "mysite@example.com",
           pnumber:item.Phone,
           userId:user?.user_id,
-          uploads:JSON.parse(item.Photo || "[]")
+          uploads:JSON.stringify(item.Photo ? [item.Photo] : [])
         }
+
+        console.log(dataItem,"dataItem")
 
         props.createCache(dataItem)
       }) 
