@@ -54,13 +54,16 @@ const Profile = (props) => {
           address: JSON.stringify({value:item.Address,address:item.Address,coordinates:{lat:item.Latitude,lng:item.Longitude}}),
           email: "mysite@example.com",
           pnumber:item.Phone,
-          userId:user.user_id
+          userId:user?.user_id,
+          uploads:JSON.stringify(item.Photo ? [item.Photo] : [])
         }
+
+        console.log(dataItem,"dataItem")
 
         props.createCache(dataItem)
       }) 
     }
-  },[props.website.cachesSiteData])
+  },[props.website.cachesSiteData,user])
 
   const getUserData = async () => {
     const user = JSON.parse(await localStorage.getItem("loginToken")).user;
@@ -161,7 +164,7 @@ const Profile = (props) => {
                     <td>{item.id}</td>
                     <td>{item.companyName}</td>
                     <td>{item.about && `${item.about.substring(0, 50)} ...`}</td>
-                    <td>{item.address}</td>
+                    <td>{JSON.parse(item.address).address}</td>
                     <td>{item.email}</td>
                     <td>{item.mobile}</td>
                     <td>

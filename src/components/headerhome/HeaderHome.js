@@ -5,12 +5,13 @@ import {
   faHome
 } from "@fortawesome/free-solid-svg-icons";
 import styles from './HeaderHome.module.css'
+import { withRouter } from "react-router-dom";
 
-const Header = () => {
+const Header = (props) => {
   return (
     <Navbar expand="lg" className="justify-content-end">
       <Nav >
-        <Nav.Link href={`${process.env.PUBLIC_URL}/`} className={styles.navItem}>
+        <Nav.Link onClick={()=>props.history.push(`${process.env.PUBLIC_URL}/`)} className={styles.navItem}>
           <FontAwesomeIcon icon={faHome} size="2x" className={styles.homeIcon}/>
         </Nav.Link>
       </Nav>
@@ -18,4 +19,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default (withRouter(Header));
