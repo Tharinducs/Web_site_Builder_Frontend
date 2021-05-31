@@ -9,7 +9,7 @@ const Intro = ({ image, cname, uCover }) => {
     <div
       id="intro"
       style={{
-        backgroundImage: "url("+API_DOMAIN+"/api/uploads/"+uCover+")",
+        backgroundImage: "url("+uCover+")",
         backgroundPosition:"center",
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
