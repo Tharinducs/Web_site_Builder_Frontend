@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PlacesAutocomplete, {
     geocodeByAddress,
-    getLatLng
+    getLatLng,
 } from "react-places-autocomplete";
 import styles from "./PlacesAutoComplete.module.css";
 
@@ -12,11 +12,19 @@ class PlacesAutoComplete extends Component {
         super(props);
 
         this.state = {
-            address: props.value?.address || ""
+            address: props.value?.address || "",
+            gmapsLoaded: false,
         };
     }
 
+    initMap = () => {
+        this.setState({
+          gmapsLoaded: true,
+        })
+      }
+
     componentDidMount() {
+        window.initMap = this.initMap
         this.setState({ address: this.props.value?.address || "" })
     }
 
@@ -27,6 +35,7 @@ class PlacesAutoComplete extends Component {
 
     }
 
+  
     handleChange = address => {
         this.setState(() => {
             return { address };
@@ -45,6 +54,7 @@ class PlacesAutoComplete extends Component {
                     }));
                     this.props.setLat(latLng.lat);
                     this.props.setLng(latLng.lng)
+                    this.props.onAdressSet(true);
                     return { address };
                 });
             })
@@ -59,10 +69,12 @@ class PlacesAutoComplete extends Component {
         } = this.props;
 
         return (
+            // <div>{window.google && (
             <PlacesAutocomplete
                 value={this.state.address}
                 onChange={this.handleChange}
                 onSelect={this.handleSelect}
+                
             >
                 {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
                     <div>
@@ -98,6 +110,8 @@ class PlacesAutoComplete extends Component {
                     </div>
                 )}
             </PlacesAutocomplete>
+            // )}
+            // </div>
         );
     }
 }

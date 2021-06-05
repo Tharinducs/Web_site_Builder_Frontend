@@ -83,8 +83,8 @@ const Editweb = (props) => {
       if(state.websiteData?.cover){
         props.setCoverData(state.websiteData?.cover)
       }
-      setLat(address.lat || null);
-      setLng(address.lng || null);
+      setLat(address.coordinates.lat || null);
+      setLng(address.coordinates.lng || null);
       setWebSite(state.websiteData);
     } else {
       props.history.push(`${process.env.PUBLIC_URL}/profile`);
@@ -272,6 +272,7 @@ const Editweb = (props) => {
                       setValue={formprops.setFieldValue}
                       lat={lat || null}
                       lng={lng || null}
+                      edit={true}
                     />
                     <div className="row">
                       <div className="col-lg-4">
