@@ -58,8 +58,6 @@ const Profile = (props) => {
           uploads:JSON.stringify(item.Photo ? [item.Photo] : [])
         }
 
-        console.log(dataItem,"dataItem")
-
         props.createCache(dataItem)
       }) 
     }

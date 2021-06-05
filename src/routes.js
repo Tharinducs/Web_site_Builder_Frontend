@@ -10,7 +10,6 @@ import EditwebView from './views/editweb'
 import Webpage from './views/webpage'
 import ProfileView from './views/profile'
 import ChangePasswordView from './views/changepassword'
-import ErrorPage from './views/404Page'
 
 //route configurations
 const routes = [
@@ -19,12 +18,6 @@ const routes = [
         exact: true,
         layout: DefaultLayout,
         component: HomeView,
-    },
-    {
-        path: `${process.env.PUBLIC_URL}/404`,
-        exac: true,
-        layout: LoginLayout,
-        component: ErrorPage,
     },
     {
         path: `${process.env.PUBLIC_URL}/login`,

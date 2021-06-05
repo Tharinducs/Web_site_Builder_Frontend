@@ -1,35 +1,19 @@
 import React, { useState, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  GeoJSON,
-  useMapEvent,
-  useMap,
-} from "react-leaflet";
-import L from "leaflet";
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import {GOOGLE_API_KEY} from '../../_helpers/constant'
+import GoogleMapReact from 'google-map-react';
 
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-});
+import marker from "../../assets/img/marker.png"
 
-L.Marker.prototype.options.icon = DefaultIcon;
+const AnyReactComponent = () => <div><img style={{height:30}} src={marker} alt="marker"/></div>;
 
-const MyComponent = ({ changeP }) => {
-  useMapEvent("click", (e) => {
-    changeP(e);
-  });
-  return null;
-};
+
+
 
 const SimpleExample = (props) => {
   const [lat, setLat] = useState(62.1339172);
   const [lng, setLng] = useState(25.0954868);
-  const [zoom, setZoom] = useState(6);
+  const [defaultCenter,setDefaultCenter] = useState({lat:62.1339172,lng:25.0954868})
+  const [zoom, setZoom] = useState(9);
   const position = [lat, lng];
 
 
@@ -40,22 +24,24 @@ const SimpleExample = (props) => {
     }
   }, [props?.lat, props?.lng]);
 
-function ChangeView({ center, zoom }) {
-  const map = useMap();
-  map.setView(center, zoom);
-  return null;
-}
 
 
   return (
-    <MapContainer center={position} zoom={zoom} scrollWheelZoom={false} >
-      <ChangeView center={position} zoom={zoom} /> 
-      <TileLayer
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-      />
-      <Marker position={position}></Marker>
-    </MapContainer>
+    <div style={{height:320,width:'100%'}}>
+      <GoogleMapReact
+          bootstrapURLKeys={{ key: GOOGLE_API_KEY }}
+          defaultCenter={defaultCenter}
+          defaultZoom={zoom}
+          zoom={zoom}
+          center={position}
+        >
+          <AnyReactComponent
+            lat={lat}
+            lng={lng}
+            text="My Marker"
+          />
+        </GoogleMapReact>
+    </div>
   );
 };
 
