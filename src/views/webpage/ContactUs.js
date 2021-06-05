@@ -84,7 +84,6 @@ const ContactUs = ({ website,from }) => {
               {from === 'create' ? website.pnumber :  website.mobile}
             </div>
           </div>
-
           <Map lat={lat || null} lng={lng || null}/>
         </div>
 

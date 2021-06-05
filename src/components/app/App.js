@@ -55,9 +55,7 @@ const App = () => {
               component={route.layout(route.component, route.breadcrumbs)}
             />
           ))}
-          {/* <Redirect to="/404" /> */}
         </Switch>
-        
       </Router>
     </div>
   );

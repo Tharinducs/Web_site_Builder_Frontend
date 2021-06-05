@@ -183,12 +183,10 @@ const CreateWeb = (props) => {
 
   const handleSubmit = (values) => {
     const prevUploads = (props.website.files || [])
-    console.log({prevUploads})
     let data = values;
     data.userId = userId;
     data.type = type;
     data.uploads = JSON.stringify(prevUploads);
-    // console.log({ data });
     data.cover = props.website.cover ? props.website.cover : null;
     props.createWebsite(data);
   };
@@ -402,7 +400,6 @@ const CreateWeb = (props) => {
                           props.website.files ? (
                           <div className="row">
                             {props.website.files.map((item, index) => {
-                              console.log(item, "item")
                               return (
                                 <div className="col-lg-4" key={index}>
                                   <img
