@@ -32,6 +32,7 @@ const CreateWeb = (props) => {
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
   const [lodder, setLodder] = useState(false);
+  const [addressChanged,setAddressChanged] = useState(false)
   const [clicked, setClicked] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [notLoggedIn, setNotLoggedIn] = useState(false);
@@ -310,13 +311,15 @@ const CreateWeb = (props) => {
                         <p className={styles.lable}>Address</p>
                       </div>
                       <div className="col-lg-8">
-                        <PlacesAutoComplete name="address" value={formprops.values.address !== "" ? JSON.parse(formprops.values.address) : undefined} setFieldValue={formprops.setFieldValue} setLat={setLat} setLng={setLng} />
+                        <PlacesAutoComplete name="address" value={formprops.values.address !== "" ? JSON.parse(formprops.values.address) : undefined} setFieldValue={formprops.setFieldValue} setLat={setLat} setLng={setLng} onAdressSet={setAddressChanged}/>
                       </div>
                     </div>
                     <Map
                       setValue={formprops.setFieldValue}
                       lat={lat || null}
                       lng={lng || null}
+                      addressChanged={addressChanged}
+                      edit={false}
                     />
                     {formprops.errors.address && submitted && (
                       <div className={styles.errorMessage}>
